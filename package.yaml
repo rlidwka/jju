@@ -1,0 +1,17 @@
+name: json5-utils
+version: 0.0.1
+description: JSON and JSON5 parsers done right
+main: parse.js
+scripts: 
+  test: "echo \"Error: no test specified\" && exit 1"
+repository: 
+  type: git
+  url: "git@github.com:rlidwka/json5-utils.git "
+keywords: 
+  - json
+  - json5
+  - parser
+author: Alex Kocharin
+license: WTFPL
+bugs: 
+  url: "https://github.com/rlidwka/json5-utils.git /issues"
