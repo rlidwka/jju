@@ -1,15 +1,17 @@
 
 This JSON5 version is a subset of ES5 language, specification is here:
+
 http://www.ecma-international.org/publications/files/ECMA-ST/Ecma-262.pdf
 
-This is a language that defines data structures only, so following restrictions are applied:
+This is a language that defines data structures only, so following notes/restrictions are applied:
 
 - Literals (NullLiteral, BooleanLiteral, NumericLiteral, StringLiteral) are allowed.
 - Compatibility syntax is not supported, which means octal literals are forbidden.
 - ArrayLiterals and allowed, but instead of AssignmentExpressions you can only use other allowed Literals, ArrayLiterals and ObjectLiterals. Elisions are currently not supported.
 - ObjectLiterals and allowed, but instead of AssignmentExpressions you can only use other allowed Literals, ArrayLiterals and ObjectLiterals. Setters and getters are forbidden.
-- Any data that has a number type can be represented, including +0, -0, +Infinity, -Infinity and NaN.
+- All other primary expressions ("this", Identifier, Expression) are forbidden.
 - Two unary expressions ('-' and '+') allowed before NumericLiterals.
+- Any data that has a number type can be represented, including +0, -0, +Infinity, -Infinity and NaN.
 - "undefined" is forbidden, use null instead if applicable.
 - Comments and whitespace are defined according to spec. Two or more consecutive asterisks in multiline comments are allowed.
 
