@@ -1,4 +1,10 @@
-// http://www.ecma-international.org/publications/files/ECMA-ST/Ecma-262.pdf
+/*
+ * Author: Alex Kocharin <alex@kocharin.ru>
+ * GIT: https://github.com/rlidwka/json5-utils
+ * Licence: WTFPL, grab your copy here: http://www.wtfpl.net/txt/copying/
+ */
+
+// RTFM: http://www.ecma-international.org/publications/files/ECMA-ST/Ecma-262.pdf
 
 var Uni = require('./unicode')
 
