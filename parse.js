@@ -112,7 +112,7 @@ function parse(input, options) {
 
 	function parseGeneric(identAllowed) {
 		var result
-		//console.log('parse: ', input.substr(position, 40))
+		//console.log('parse: =============\n', input.substr(position, 40))
 
 		while (position < length) {
 			var chr = input[position++]
@@ -143,15 +143,15 @@ function parse(input, options) {
 			) {
 				return parseNumber()
 
-			} else if (chr === 'n') {
+			} else if (chr === 'n' && !identAllowed) {
 				parseKeyword('null')
 				return null
 
-			} else if (chr === 't') {
+			} else if (chr === 't' && !identAllowed) {
 				parseKeyword('true')
 				return true
 
-			} else if (chr === 'f') {
+			} else if (chr === 'f' && !identAllowed) {
 				parseKeyword('false')
 				return false
 
@@ -346,10 +346,15 @@ function parse(input, options) {
 			if (!legacy && (chr === 'x' || chr === 'X')) {
 				while (position < length && isHexDigit(input[position])) position++
 
-				// negative hex gotcha
+				// signed hex gotcha
 				if (input[start] === '-') {
 					start++
 					return -to_num()
+
+				} else if (input[start] === '+') {
+					start++
+					return to_num()
+
 				} else {
 					return to_num()
 				}
