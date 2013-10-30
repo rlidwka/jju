@@ -28,3 +28,31 @@ addTest('{"2":1,"3":null,}')
 addTest('{ "2 " : 1 , "3":null  , }')
 addTest('{ \"2\"  : 25e245 ,  \"3\": 23 }')
 
+for (var i=0; i<100000; i++) {
+	var str = '-01.e'.split('')
+
+	var rnd = [1,2,3,4,5].map(function(x) {
+		x = ~~(Math.random()*str.length)
+		return str[x]
+	}).join('')	
+	console.log('!!!', rnd)
+
+	try {
+		var x = parse(rnd)
+	} catch(err) {
+		x = 'fail'
+	}
+	try {
+		var y = JSON.parse(rnd)
+	} catch(err) {
+		y = 'fail'
+	}
+	try {
+		var z = eval(rnd)
+	} catch(err) {
+		z = 'fail'
+	}
+	console.log(rnd, x, y, z)
+	if (x !== y && x !== z) throw 'ERROR'
+}
+

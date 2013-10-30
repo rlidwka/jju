@@ -54,9 +54,14 @@ var unescapeMap = {
 	'v' : '\v',
 }
 
-function parse(input) {
+function parse(input, options) {
 	// JSON.parse compat
 	if (typeof(input) !== 'string') input = String(input)
+	if (options == null) options = {}
+
+	// parse as a standard JSON mode
+	// it's not really JSON, just cool features turned off
+	var legacy = options.legacy
 
 	var length = input.length
 	  , lineno = 0
@@ -111,7 +116,12 @@ function parse(input) {
 			} else if (chr === '[') {
 				return parseArray()
 
-			} else if (chr === '-' || chr === '.' || isDecDigit(chr)) {
+			} else if (chr === '-'
+			       ||  chr === '.'
+			       ||  isDecDigit(chr)
+			           //           + number       Infinity          NaN
+			       ||  (!legacy && (chr === '+' || chr === 'I' || chr === 'N'))
+			) {
 				return parseNumber()
 
 			} else if (chr === 'n') {
@@ -223,36 +233,55 @@ function parse(input) {
 		position--
 
 		var start = position
+		  , chr = input[position++]
 		  , t
 
 		// ex: -5982475.249875e+29384
 		//     ^ skipping this
-		if (input[position] === '-') position++
+		if (chr === '-' || (chr === '+' && !legacy)) chr = input[position++]
 
-		if (input[position] >= '1' && input[position] <= '9') {
+		if (chr === 'N' && !legacy) {
+			position++
+			parseKeyword('NaN')
+			return NaN
+		}
+
+		if (chr === 'I' && !legacy) {
+			position++
+			parseKeyword('Infinity')
+
+			// returning +inf or -inf
+			return Number(input.substr(start, position - start))
+		}
+
+		if (chr >= '1' && chr <= '9') {
 			// ex: -5982475.249875e+29384
 			//        ^^^ skipping these
-			while (++position < length && isDecDigit(input[position]));
+			while (position < length && isDecDigit(input[position])) position++
+			chr = input[position++]
 		}
 		
-		if (input[position] === '0') {
-			// special case for leading zero: 0.123456
-			position++
-		}
+		// special case for leading zero: 0.123456
+		if (chr === '0') chr = input[position++]
 
-		if (input[position] === '.') {
+		if (chr === '.') {
 			// ex: -5982475.249875e+29384
 			//                ^^^ skipping these
-			while (++position < length && isDecDigit(input[position]));
+			while (position < length && isDecDigit(input[position])) position++
+			chr = input[position++]
 		}
 
-		if (input[position] === 'e' || input[position] === 'E') {
-			position++
-			if (input[position] === '-' || input[position] === '+') position++
+		if (chr === 'e' || chr === 'E') {
+			chr = input[position++]
+			if (chr === '-' || chr === '+') position++
 			// ex: -5982475.249875e+29384
 			//                       ^^^ skipping these
-			while (++position < length && isDecDigit(input[position]));
+			while (position < length && isDecDigit(input[position])) position++
+			chr = input[position++]
 		}
+
+		// we have char in the buffer, so count for it
+		position--
 
 		var result = Number(input.substr(start, position - start))
 		if (Number.isNaN(result)) {
@@ -325,7 +354,8 @@ function parse(input) {
 	var result = parseGeneric()
 	if (result !== undefined) {
 		var result2 = parseGeneric()
-		if (result2 === undefined) {
+
+		if (result2 === undefined && position >= length) {
 			return result
 		} else {
 			fail()
