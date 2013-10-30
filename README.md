@@ -11,7 +11,7 @@ This is a language that defines data structures only, so following restrictions 
 - Any data that has a number type can be represented, including +0, -0, +Infinity, -Infinity and NaN.
 - Two unary expressions ('-' and '+') allowed before NumericLiterals.
 - "undefined" is forbidden, use null instead if applicable.
-- Comments and whitespace are defined the same way they are defined in ES5 spec.
+- Comments and whitespace are defined according to spec. Two or more consecutive asterisks in multiline comments are allowed.
 
 Main authority here is ES5 spec, so strict backward JSON compatibility is not guaranteed.
 
