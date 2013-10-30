@@ -196,10 +196,11 @@ function parse(input, options) {
 				if (!multi) return
 
 			} else if (chr === '*' && multi) {
-				chr = input[position++]
-
 				// end of multiline comment
-				if (chr === '/') return
+				if (input[position] === '/') {
+					position++
+					return
+				}
 
 			} else {
 				// nothing

@@ -17,5 +17,15 @@ Main authority here is ES5 spec, so strict backward JSON compatibility is not gu
 
 If you're unsure whether a behaviour of this library is a bug or not, you can run this test:
 
-`JSON5.parse(String(something))` should always be equal to `eval('(function(){"use strict"\nreturn '+String(something)+'\n})()')` if `something` meets all rules above.
+```javascript
+JSON5.parse(String(something))
+```
+
+Should always be equal to:
+
+```javascript
+eval('(function(){"use strict"\nreturn ('+String(something)+'\n)\n})()')
+```
+
+If `something` meets all rules above. Parens and newlines in the example above are carefully placed so comments and another newlines will work properly, so don't look so impressed about that.
 
