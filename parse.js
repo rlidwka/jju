@@ -104,7 +104,7 @@ function parse(input, options) {
 					.replace(/'/g, "\\'")
 					.replace(/\\"/g, '"')
 				+ '\''
-	
+
 			if (!msg) msg = 'Unexpected token ' + token
 		} else {
 			if (!msg) msg = 'Unexpected end of input'
@@ -475,7 +475,7 @@ function parse(input, options) {
 
 				} else {
 					// \X -> x
-					result += chr					
+					result += chr
 				}
 
 			} else if (isLineTerminator(chr)) {
