@@ -10,7 +10,7 @@ function addTest(arg) {
 		x = 'fail'
 	}
 	try {
-		var z = eval('(function(){\nreturn '+String(arg)+'\n})()')
+		var z = eval('(function(){"use strict"\nreturn '+String(arg)+'\n})()')
 	} catch(err) {
 		z = 'fail'
 	}
