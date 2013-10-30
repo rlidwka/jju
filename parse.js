@@ -136,10 +136,45 @@ function parse(input, options) {
 				parseKeyword('false')
 				return false
 
+			} else if (chr === '/'
+			       && !legacy
+			       && (input[position] === '/' || input[position] === '*')
+			) {
+				skipComment(input[position++] === '*')
+
 			} else {
 				position--
 				return
 			}
+		}
+	}
+
+	function skipComment(multi) {
+		while (position < length) {
+			var chr = input[position++]
+
+			if (isLineTerminator(chr)) {
+				// account for <cr><lf>
+				if (chr === '\r' && input[position] === '\n') position++
+				linestart = 0
+				lineno++
+
+				// LineTerminator is an end of singleline comment
+				if (!multi) return
+
+			} else if (chr === '*' && multi) {
+				chr = input[position++]
+
+				// end of multiline comment
+				if (chr === '/') return
+
+			} else {
+				// nothing
+			}
+		}
+
+		if (multi) {
+			fail('Unclosed multiline comment')
 		}
 	}
 

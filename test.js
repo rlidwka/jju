@@ -10,7 +10,7 @@ function addTest(arg) {
 		x = 'fail'
 	}
 	try {
-		var z = eval('('+arg+')')
+		var z = eval('(function(){\nreturn '+String(arg)+'\n})()')
 	} catch(err) {
 		z = 'fail'
 	}
@@ -44,6 +44,10 @@ addTest('{ "2 " : 1 , "3":null  , }')
 addTest('{ \"2\"  : 25e245 ,  \"3\": 23 }')
 addTest('{"2":1,"3":nul,}')
 addTest('{:1,"3":nul,}')
+addTest('[1,2] // ssssssssss 3,4,5,]  ')
+addTest('[1,2 , // ssssssssss \n//xxx\n3,4,5,]  ')
+addTest('[1,2 /* ssssssssss 3,4,*/ /* */ , 5 ]  ')
+addTest('[1,2 /* ssssssssss 3,4,*/ /* * , 5 ]  ')
 addTest('{"3":1,"3":,}')
 
 for (var i=0; i<100; i++) {
