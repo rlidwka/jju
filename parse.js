@@ -107,8 +107,8 @@ function parse(input, options) {
 			} else if (isWhiteSpace(chr)) {
 				// nothing
 
-			} else if (chr === '"') {
-				return parseString()
+			} else if (chr === '"' || (chr === '\'' && !legacy)) {
+				return parseString(chr)
 
 			} else if (chr === '{') {
 				return parseObject()
@@ -236,22 +236,29 @@ function parse(input, options) {
 		  , chr = input[position++]
 		  , t
 
+		var to_num = function() {
+			var result = Number(input.substr(start, position - start))
+			if (Number.isNaN(result)) {
+				fail('Bad numeric literal')
+			} else {
+				return result
+			}
+		}
+
 		// ex: -5982475.249875e+29384
 		//     ^ skipping this
 		if (chr === '-' || (chr === '+' && !legacy)) chr = input[position++]
 
 		if (chr === 'N' && !legacy) {
-			position++
 			parseKeyword('NaN')
 			return NaN
 		}
 
 		if (chr === 'I' && !legacy) {
-			position++
 			parseKeyword('Infinity')
 
 			// returning +inf or -inf
-			return Number(input.substr(start, position - start))
+			return to_num()
 		}
 
 		if (chr >= '1' && chr <= '9') {
@@ -260,9 +267,23 @@ function parse(input, options) {
 			while (position < length && isDecDigit(input[position])) position++
 			chr = input[position++]
 		}
-		
+
 		// special case for leading zero: 0.123456
-		if (chr === '0') chr = input[position++]
+		if (chr === '0') {
+			chr = input[position++]
+
+			if (!legacy && (chr === 'x' || chr === 'X')) {
+				while (position < length && isHexDigit(input[position])) position++
+
+				// negative hex gotcha
+				if (input[start] === '-') {
+					start++
+					return -to_num()
+				} else {
+					return to_num()
+				}
+			}
+		}
 
 		if (chr === '.') {
 			// ex: -5982475.249875e+29384
@@ -282,23 +303,17 @@ function parse(input, options) {
 
 		// we have char in the buffer, so count for it
 		position--
-
-		var result = Number(input.substr(start, position - start))
-		if (Number.isNaN(result)) {
-			fail('Bad numeric literal')
-		} else {
-			return result
-		}
+		return to_num()
 	}
 
-	function parseString() {
+	function parseString(endChar) {
 		// 7.8.4 of ES262 spec
 		var result = ''
 
 		while (position < length) {
 			var chr = input[position++]
 
-			if (chr === '"') {
+			if (chr === endChar) {
 				return result
 
 			} else if (chr === '\\') {
