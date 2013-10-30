@@ -1,5 +1,24 @@
 // http://www.ecma-international.org/publications/files/ECMA-ST/Ecma-262.pdf
 
+var Uni = require('./unicode')
+
+function isIdentifierStart(x) {
+	return x === '$'
+	    || x === '_'
+	    || (x >= 'A' && x <= 'Z')
+	    || (x >= 'a' && x <= 'z')
+	    || (x >= '\u0080' && Uni.NonAsciiIdentifierStart.test(x))
+}
+
+function isIdentifierPart(x) {
+	return x === '$'
+	    || x === '_'
+	    || (x >= 'A' && x <= 'Z')
+	    || (x >= 'a' && x <= 'z')
+	    || (x >= '0' && x <= '9') // <-- addition to Start
+	    || (x >= '\u0080' && Uni.NonAsciiIdentifierPart.test(x))
+}
+
 function isHexDigit(x) {
 	return (x >= '0' && x <= '9')
 	    || (x >= 'A' && x <= 'F')
@@ -91,7 +110,7 @@ function parse(input, options) {
 		throw error
 	}
 
-	function parseGeneric() {
+	function parseGeneric(identAllowed) {
 		var result
 		//console.log('parse: ', input.substr(position, 40))
 
@@ -141,6 +160,20 @@ function parse(input, options) {
 			       && (input[position] === '/' || input[position] === '*')
 			) {
 				skipComment(input[position++] === '*')
+
+			} else if (!legacy
+			       &&  identAllowed
+			       &&  isIdentifierStart(chr) || (chr === '\\' && input[position === 'u'])) {
+				// unicode char or a unicode sequence
+				var rollback = position - 1
+				var result = parseIdentifier()
+
+				if (result === undefined) {
+					position = rollback
+					return
+				} else {
+					return result
+				}
 
 			} else {
 				position--
@@ -192,8 +225,8 @@ function parse(input, options) {
 		var result = {}
 
 		while (position < length) {
-			var item1 = parseGeneric()
-				
+			var item1 = parseGeneric(!legacy)
+
 			var whitespace = parseGeneric()
 			if (whitespace !== undefined) fail('Unexpected literal: ' + whitespace)
 
@@ -207,7 +240,9 @@ function parse(input, options) {
 
 				if (item2 === undefined) fail('No value found for key ' + item1)
 				if (typeof(item1) !== 'string') {
-					fail('Wrong key type: ' + item1)
+					if (legacy && typeof(item1) !== 'number') {
+						fail('Wrong key type: ' + item1)
+					}
 				}
 
 				result[item1] = item2
@@ -339,6 +374,48 @@ function parse(input, options) {
 		// we have char in the buffer, so count for it
 		position--
 		return to_num()
+	}
+
+	function parseIdentifier() {
+		// rewind because we don't know first char
+		position--
+
+		var result = ''
+
+		while (position < length) {
+			var chr = input[position++]
+
+			if (chr === '\\'
+			&&  input[position] === 'u'
+			&&  isHexDigit(input[position+1])
+			&&  isHexDigit(input[position+2])
+			&&  isHexDigit(input[position+3])
+			&&  isHexDigit(input[position+4])
+			) {
+				// UnicodeEscapeSequence
+				chr = String.fromCharCode(parseInt(input.substr(position+1, 4), 16))
+				position += 5
+			}
+
+			if (result.length) {
+				// identifier started
+				if (isIdentifierPart(chr)) {
+					result += chr
+				} else {
+					position--
+					return result
+				}
+
+			} else {
+				if (isIdentifierStart(chr)) {
+					result += chr
+				} else {
+					return undefined
+				}
+			}
+		}
+
+		fail()
 	}
 
 	function parseString(endChar) {

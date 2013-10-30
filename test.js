@@ -49,6 +49,10 @@ addTest('[1,2 , // ssssssssss \n//xxx\n3,4,5,]  ')
 addTest('[1,2 /* ssssssssss 3,4,*/ /* */ , 5 ]  ')
 addTest('[1,2 /* ssssssssss 3,4,*/ /* * , 5 ]  ')
 addTest('{"3":1,"3":,}')
+addTest('{ чйуач:1, щцкшчлм  : 4,}')
+addTest('{ qef-:1 }')
+addTest('{ $$$:1 , ___: 3}')
+addTest('{3:1,2:1}')
 
 for (var i=0; i<100; i++) {
 	var str = '-01.e'.split('')
