@@ -17,6 +17,9 @@ bugs:
 
 main: parse.js
 
+scripts:
+  test: 'node test/test.js'
+
 keywords:
   - json
   - json5

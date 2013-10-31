@@ -1,6 +1,6 @@
 
 var assert = require('assert')
-var parse = require('./parse').parse
+var parse = require('../').parse
 
 function addTest(arg) {
 	console.log('testing: ', arg)
