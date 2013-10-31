@@ -79,6 +79,36 @@ var unescapeMap = {
 	'v' : '\v',
 }
 
+function formatError(input, msg, position, lineno, column) {
+	var result = msg + ' at ' + lineno + ':' + column
+	  , tmppos = position - column - 1
+	  , srcline = ''
+	  , underline = ''
+
+	// output no more than 70 characters before the wrong ones
+	if (tmppos < position - 70) {
+		tmppos = position - 70
+	}
+
+	while (++tmppos < input.length) {
+		var chr = input[tmppos]
+
+		if (isLineTerminator(chr)) break
+		srcline += chr
+
+		if (position === tmppos) {
+			underline += '^'
+		} else if (position > tmppos) {
+			underline += input[tmppos] === '\t' ? '\t' : ' '
+		}
+
+		// output no more than 78 characters on the string
+		if (srcline.length > 78) break
+	}
+
+	return result + '\n' + srcline + '\n' + underline
+}
+
 function parse(input, options) {
 	// JSON.parse compat
 	if (typeof(input) !== 'string') input = String(input)
@@ -96,21 +126,23 @@ function parse(input, options) {
 	function fail(msg) {
 		var column = position - linestart
 
-		if (position < length) {
-			var token = '\'' +
-				JSON
-					.stringify(input[position])
-					.replace(/^"|"$/g, '')
-					.replace(/'/g, "\\'")
-					.replace(/\\"/g, '"')
-				+ '\''
+		if (!msg) {
+			if (position < length) {
+				var token = '\'' +
+					JSON
+						.stringify(input[position])
+						.replace(/^"|"$/g, '')
+						.replace(/'/g, "\\'")
+						.replace(/\\"/g, '"')
+					+ '\''
 
-			if (!msg) msg = 'Unexpected token ' + token
-		} else {
-			if (!msg) msg = 'Unexpected end of input'
+				if (!msg) msg = 'Unexpected token ' + token
+			} else {
+				if (!msg) msg = 'Unexpected end of input'
+			}
 		}
-		var error = new Error(msg + ' at ' + lineno + ':' + column)
 
+		var error = new Error(formatError(input, msg, position, lineno, column))
 		error.row = lineno
 		error.column = column
 		throw error
@@ -126,7 +158,7 @@ function parse(input, options) {
 			if (isLineTerminator(chr)) {
 				// account for <cr><lf>
 				if (chr === '\r' && input[position] === '\n') position++
-				linestart = 0
+				linestart = position
 				lineno++
 
 			} else if (isWhiteSpace(chr)) {
@@ -195,7 +227,7 @@ function parse(input, options) {
 			if (isLineTerminator(chr)) {
 				// account for <cr><lf>
 				if (chr === '\r' && input[position] === '\n') position++
-				linestart = 0
+				linestart = position
 				lineno++
 
 				// LineTerminator is an end of singleline comment
@@ -235,7 +267,7 @@ function parse(input, options) {
 			var item1 = parseGeneric(!legacy)
 
 			var whitespace = parseGeneric()
-			if (whitespace !== undefined) fail('Unexpected literal: ' + whitespace)
+			if (whitespace !== undefined) fail('Unexpected literal: ' + JSON.stringify(whitespace))
 
 			var chr = input[position++]
 
