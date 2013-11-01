@@ -31,3 +31,38 @@ eval('(function(){"use strict"\nreturn ('+String(something)+'\n)\n})()')
 
 If `something` meets all rules above. Parens and newlines in the example above are carefully placed so comments and another newlines will work properly, so don't look so impressed about that.
 
+## Options
+
+parse(string, options):
+
+stringify(object, options):
+ - ascii - output ascii only (bool, default=false)
+ - indent - indentation (string or number, default='\t')
+ - quote - enquoting char (string, "'" or '"', default="'")
+
+## Modes of operation
+
+TODO: not yet working
+
+- simple:
+	no custom datatypes
+	no .toJSON/.toJSON5
+	for serializing simple json-compatible objects only (i.e. user-generated data)
+
+- full
+	custom datatypes
+	.toJSON/.toJSON5 present (prototype only)
+	for representing arbitrary data structures as close as possible
+
+- json:
+	no custom datatypes
+	.toJSON present
+	json compatible
+
+## Weirdness of JSON5
+
+ - no elisions, `[,,,] -> [null,null,null]`
+ - `[Object], [Circular]` aren't parsed
+ - no way of nicely representing multiline strings
+ - unicode property names are way to hard to implement
+
