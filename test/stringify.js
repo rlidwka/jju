@@ -11,7 +11,7 @@ function deepEqual(x, y) {
 }
 
 function addTest(arg, arg2) {
-	deepEqual(parse(stringify(arg)), arg2 || arg)
+	deepEqual(parse(stringify(arg)), arg2 === undefined ? arg : arg2)
 }
 
 addTest(0)
@@ -32,6 +32,22 @@ addTest({})
 addTest({1:2,3:4})
 addTest({1:{1:{1:{1:4}}}, 3:4})
 addTest({1:undefined, 3:undefined}, {})
+addTest(new Number(4), 4)
+addTest(new Boolean(true), true)
+addTest(new String('xqefxef'), 'xqefxef')
+addTest(new Boolean(), false)
 
 var r='';for (var i=0; i<5000; i++) {r+=String.fromCharCode(i)}
 addTest(r)
+
+assert.equal("[1, 2, 3]", stringify([1, 2, 3], {indent: 1}))
+assert.equal("[1, 2, 3]", stringify([1, 2, 3], {indent: 2}))
+
+var oddball = Object(42)
+oddball.__proto__ = { __proto__: null }
+assert.equal('{}', stringify(oddball))
+
+/* this WILL throw
+var falseNum = Object("37")
+falseNum.__proto__ = Number.prototype
+assert.equal("{0: '3', 1: '7'}", stringify(falseNum))*/

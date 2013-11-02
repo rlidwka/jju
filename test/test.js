@@ -3,7 +3,7 @@ var assert = require('assert')
 var parse = require('../').parse
 
 function addTest(arg) {
-	console.log('testing: ', arg)
+	//console.log('testing: ', arg)
 	try {
 		var x = parse(arg)
 	} catch(err) {
@@ -54,6 +54,31 @@ addTest('{ qef-:1 }')
 addTest('{ $$$:1 , ___: 3}')
 addTest('{3:1,2:1}')
 
+if (process.version > 'v0.11.7') {
+	assert(Array.isArray(parse('{__proto__:[]}').__proto__))
+	assert.equal(parse('{__proto__:{xxx:5}}').xxx, undefined)
+	assert.equal(parse('{__proto__:{xxx:5}}').__proto__.xxx, 5)
+
+	var o1 = parse('{"__proto__":[]}')
+	assert.deepEqual([], o1.__proto__)
+	assert.deepEqual(["__proto__"], Object.keys(o1))
+	assert.deepEqual([], Object.getOwnPropertyDescriptor(o1, "__proto__").value)
+	assert.deepEqual(["__proto__"], Object.getOwnPropertyNames(o1))
+	assert(o1.hasOwnProperty("__proto__"))
+	assert(Object.prototype.isPrototypeOf(o1))
+
+	// Parse a non-object value as __proto__.
+	var o2 = JSON.parse('{"__proto__":5}')
+	assert.deepEqual(5, o2.__proto__)
+	assert.deepEqual(["__proto__"], Object.keys(o2))
+	assert.deepEqual(5, Object.getOwnPropertyDescriptor(o2, "__proto__").value)
+	assert.deepEqual(["__proto__"], Object.getOwnPropertyNames(o2))
+	assert(o2.hasOwnProperty("__proto__"))
+	assert(Object.prototype.isPrototypeOf(o2))
+}
+
+assert.throws(parse.bind(null, "{-1:42}"))
+
 for (var i=0; i<100; i++) {
 	var str = '-01.e'.split('')
 
@@ -81,3 +106,11 @@ for (var i=0; i<100; i++) {
 	if (x !== y && x !== z) throw 'ERROR'
 }
 
+var array = [""]
+var expected = "''"
+for (var i = 0; i < 1000; i++) {
+  array.push("")
+  expected = "''," + expected
+}
+expected = '[' + expected + ']'
+assert.equal(expected, stringify(array))
