@@ -106,11 +106,3 @@ for (var i=0; i<100; i++) {
 	if (x !== y && x !== z) throw 'ERROR'
 }
 
-var array = [""]
-var expected = "''"
-for (var i = 0; i < 1000; i++) {
-  array.push("")
-  expected = "''," + expected
-}
-expected = '[' + expected + ']'
-assert.equal(expected, stringify(array))

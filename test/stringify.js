@@ -10,12 +10,15 @@ function deepEqual(x, y) {
 	assert.deepEqual(x, y)
 }
 
-function addTest(arg, arg2) {
+function addTest(arg, arg2, jsonSucks) {
 	deepEqual(parse(stringify(arg)), arg2 === undefined ? arg : arg2)
+	if (!jsonSucks) {
+		deepEqual(stringify(arg, {mode: 'json', indent: false}), JSON.stringify(arg))
+	}
 }
 
 addTest(0)
-addTest(-0)
+addTest(-0, undefined, true)
 addTest(NaN)
 addTest(Infinity)
 addTest(-Infinity)
@@ -38,7 +41,7 @@ addTest(new String('xqefxef'), 'xqefxef')
 addTest(new Boolean(), false)
 
 var r='';for (var i=0; i<5000; i++) {r+=String.fromCharCode(i)}
-addTest(r)
+addTest(r, undefined, true)
 
 assert.equal("[1, 2, 3]", stringify([1, 2, 3], {indent: 1}))
 assert.equal("[1, 2, 3]", stringify([1, 2, 3], {indent: 2}))
@@ -51,3 +54,18 @@ assert.equal('{}', stringify(oddball))
 var falseNum = Object("37")
 falseNum.__proto__ = Number.prototype
 assert.equal("{0: '3', 1: '7'}", stringify(falseNum))*/
+
+assert.equal(stringify(Infinity), 'Infinity')
+assert.equal(stringify(Infinity, {mode: 'json'}), 'null')
+assert.equal(stringify(NaN), 'NaN')
+assert.equal(stringify(NaN, {mode: 'json'}), 'null')
+assert.equal(stringify(-0), '-0')
+
+var array = [""]
+var expected = "''"
+for (var i = 0; i < 1000; i++) {
+  array.push("")
+  expected = "''," + expected
+}
+expected = '[' + expected + ']'
+assert.equal(expected, stringify(array, {indent: false}))
