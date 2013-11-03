@@ -68,7 +68,15 @@ TODO: not yet working
 
 ## Unicode support
 
-All json5 libraries MUST support 4 line terminator characters and 27 whitespace characters. Some libraries MAY choose not to include support for other unicode characters and apply following restrictions:
+```javascript
+// 27 whitespace characters (unicode defines 26 characters, and ES5 spec also adds \uFEFF as a whitespace)
+var whitespace = /[\u0009-\u000D\u0020\u0085\u00A0\u1680\u180E\u2000-\u200A\u2028\u2029\u202F\u205F\u3000\uFEFF]/
+
+// 4 line terminators
+var lineterminator = /[\u000A\u000D\u2028\u2029]/
+```
+
+All json5 libraries MUST support 4 line terminator characters and 27 whitespace characters described above. Some libraries MAY choose not to include support for other unicode characters and apply following restrictions:
 
 Parsers that do not fully support unicode SHOULD treat all unknown characters starting with \x80 as unicode\_letter except for line terminators and whitespace characters. This way all valid json5 objects will be parsed correctly, but some invalid json5 objects will be parsed as well.
 
