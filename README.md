@@ -13,7 +13,7 @@ This is a language that defines data structures only, so following notes/restric
 - Two unary expressions ('-' and '+') allowed before NumericLiterals.
 - Any data that has a number type can be represented, including +0, -0, +Infinity, -Infinity and NaN.
 - "undefined" is forbidden, use null instead if applicable.
-- Comments and whitespace are defined according to spec. Two or more consecutive asterisks in multiline comments are allowed.
+- Comments and whitespace are defined according to spec.
 
 Main authority here is ES5 spec, so strict backward JSON compatibility is not guaranteed.
 
@@ -65,4 +65,12 @@ TODO: not yet working
  - `[Object], [Circular]` aren't parsed
  - no way of nicely representing multiline strings
  - unicode property names are way to hard to implement
+
+## Unicode support
+
+All json5 libraries MUST support 4 line terminator characters and 27 whitespace characters. Some libraries MAY choose not to include support for other unicode characters and apply following restrictions:
+
+Parsers that do not fully support unicode SHOULD treat all unknown characters starting with \x80 as unicode\_letter except for line terminators and whitespace characters. This way all valid json5 objects will be parsed correctly, but some invalid json5 objects will be parsed as well.
+
+Serializers that do not fully support unicode SHOULD treat all unknown characters starting with \x80 as control characters, and quote property names if they happen to be in there. This way all data will be serialized correctly.
 
