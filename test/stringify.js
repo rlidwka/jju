@@ -10,18 +10,16 @@ function deepEqual(x, y) {
 	assert.deepEqual(x, y)
 }
 
-function addTest(arg, arg2, jsonSucks) {
+function addTest(arg, arg2, arg3) {
 	deepEqual(parse(stringify(arg)), arg2 === undefined ? arg : arg2)
-	if (!jsonSucks) {
-		deepEqual(stringify(arg, {mode: 'json', indent: false}), JSON.stringify(arg))
-	}
+	if (arg !== undefined) deepEqual(JSON.parse(stringify(arg, {mode: 'json', indent: false})), (arg3 === undefined ? (arg2 === undefined ? arg : arg2) : arg3))
 }
 
 addTest(0)
-addTest(-0, undefined, true)
-addTest(NaN)
-addTest(Infinity)
-addTest(-Infinity)
+addTest(-0)
+addTest(NaN, undefined, null)
+addTest(Infinity, undefined, null)
+addTest(-Infinity, undefined, null)
 addTest(123)
 addTest(19508130958019385.135135)
 addTest(-2e123)
@@ -41,7 +39,7 @@ addTest(new String('xqefxef'), 'xqefxef')
 addTest(new Boolean(), false)
 
 var r='';for (var i=0; i<5000; i++) {r+=String.fromCharCode(i)}
-addTest(r, undefined, true)
+addTest(r)
 
 assert.equal("[1, 2, 3]", stringify([1, 2, 3], {indent: 1}))
 assert.equal("[1, 2, 3]", stringify([1, 2, 3], {indent: 2}))
