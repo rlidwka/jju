@@ -1,3 +1,8 @@
+
+JSON5 grammar expressed in EBNF form. 
+
+PS: I don't know what is appropriate syntax highlighter for this, so I'm using "modula2" because why not. I also inserted <ZWSP> after backslash to preserve syntax highlighting, this character has nothing to do with actual JSON5 syntax and should be ignored.
+
 ```modula2
 json5_text = expression_with_whitespace
 
