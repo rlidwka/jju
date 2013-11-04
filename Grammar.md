@@ -1,4 +1,4 @@
-```ebnf
+```modula2
 json5_text = expression_with_whitespace
 
 expression_with_whitespace = [white_space] , expression , [white_space]
@@ -128,15 +128,15 @@ double_string_characters = double_string_character , [double_string_characters]
 
 single_string_characters = single_string_character , [single_string_characters]
 
-double_string_character = source_character - ('"' | '\' | line_terminator)
-                        | '\' , escape_sequence
+double_string_character = source_character - ('"' | '\​' | line_terminator)
+                        | '\​' , escape_sequence
                         | line_continuation
 
-single_string_character = source_character - ("'" | '\' | line_terminator)
-                        | '\' , escape_sequence
+single_string_character = source_character - ("'" | '\​' | line_terminator)
+                        | '\​' , escape_sequence
                         | line_continuation
 
-line_continuation = '\' , line_terminator_sequence
+line_continuation = '\​' , line_terminator_sequence
 
 escape_sequence = character_escape_sequence
                 | '0'
@@ -146,7 +146,7 @@ escape_sequence = character_escape_sequence
 character_escape_sequence = single_escape_character
                           | non_escape_character
 
-single_escape_character = '"' | "'" | '\' | 'b' | 'f' | 'n' | 'r' | 't' | 'v'
+single_escape_character = '"' | "'" | '\​' | 'b' | 'f' | 'n' | 'r' | 't' | 'v'
 
 non_escape_character = source_character - (escape_character | line_terminator)
 
@@ -189,7 +189,7 @@ identifier_name = identifier_start
 identifier_start = unicode_letter
                  | '$'
                  | '_'
-                 | '\' , unicode_escape_sequence
+                 | '\​' , unicode_escape_sequence
 
 identifier_part = identifier_start
                 | unicode_combining_mark
