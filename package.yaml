@@ -1,7 +1,7 @@
 # use "yapm install ." if you're installing this from git repository
 
 name: json5-utils
-version: 0.2.1
+version: 0.3.0
 description: JSON and JSON5 parsers done right
 
 author:
