@@ -1,4 +1,81 @@
 
+JSON5-utils - JSON/JSON5 parser and serializer for JavaScript.
+
+## Installation
+
+```
+npm install json5-utils 
+```
+
+## Usage
+
+```javascript
+var JSON5 = require('json5-utils')
+```
+
+### JSON5.parse() function
+
+```javascript
+/*
+ * Main syntax:
+ *
+ * `text` - text to parse, type: String
+ * `options` - parser options, type: Object
+ */
+JSON5.parse(text[, options])
+
+// compatibility syntax
+JSON5.parse(text[, reviver])
+```
+
+Options:
+
+ - duplicate\_keys - what to do with duplicate keys (["ignore" | "throw" | "replace"]), default - "throw" - String
+ - null\_prototype - create object as Object.create(null) instead of '{}', default is false unless duplicate\_keys is set to 'replace' - Boolean
+ - reviver - reviver function (see JSON spec) - Function
+
+### JSON5.stringify() function
+
+```javascript
+/*
+ * Main syntax:
+ *
+ * `value` - value to serialize, type: *
+ * `options` - serializer options, type: Object
+ */
+JSON5.stringify(value[, options])
+
+// compatibility syntax
+JSON5.stringify(value[, replacer [, space])
+```
+
+Options:
+
+ - ascii - output ascii only (Boolean, default=false)
+ - indent - indentation (string, number or boolean, default='\t')
+ - quote - enquoting char (string, "'" or '"', default="'")
+ - replacer - replacer function/array, see JSON spec
+ - mode - operation mode, set it to 'json' if you want correct json in the output (string)
+
+indent = String/Number
+quote\_keys = boolean
+ascii = Boolean
+quote = string
+no\_trailing\_comma = true
+
+mode = json implies
+options.quote = '"'
+options.no\_trailing\_comma = true
+options.quote\_keys = true
+
+
+## Advantages over existing JSON libraries
+
+Parser: json stuff
+Stringifier: util.inspect-like pretty printing
+
+## JSON5 syntax
+
 This JSON5 version is a subset of ES5 language, specification is here:
 
 http://www.ecma-international.org/publications/files/ECMA-ST/Ecma-262.pdf
@@ -31,14 +108,6 @@ eval('(function(){"use strict"\nreturn ('+String(something)+'\n)\n})()')
 
 If `something` meets all rules above. Parens and newlines in the example above are carefully placed so comments and another newlines will work properly, so don't look so impressed about that.
 
-## Options
-
-parse(string, options):
-
-stringify(object, options):
- - ascii - output ascii only (bool, default=false)
- - indent - indentation (string or number, default='\t')
- - quote - enquoting char (string, "'" or '"', default="'")
 
 ## Modes of operation
 
