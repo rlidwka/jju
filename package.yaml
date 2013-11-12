@@ -2,7 +2,7 @@
 
 name: json5-utils
 version: 0.3.0
-description: JSON and JSON5 parsers done right
+description: JSON/JSON5 parser and serializer
 
 author:
   name: Alex Kocharin
