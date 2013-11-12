@@ -67,3 +67,6 @@ for (var i = 0; i < 1000; i++) {
 }
 expected = '[' + expected + ']'
 assert.equal(expected, stringify(array, {indent: false}))
+
+assert.strictEqual(stringify([1,2,3], function(){}), undefined)
+
