@@ -107,10 +107,49 @@ Options:
 
 ## Advantages over existing JSON libraries
 
-Parser: json stuff
-Stringifier: util.inspect-like pretty printing
+In a few cases it makes sense to use this module instead of built-in JSON methods.
+
+Parser:
+ - better error reporting with source code and line numbers
+
+In case of syntax error, JSON.parse does not return any good information to the user. This module does:
+
+```
+$ node -e 'require("json5-utils").parse("[1,1,1,1,invalid]")'
+
+SyntaxError: Unexpected token 'i' at 0:9
+[1,1,1,1,invalid]
+         ^
+```
+
+This module is about 5 times slower, so if user experience matters to you more than performance, use this module. If you're working with a lot of machine-generated data, use JSON.parse instead.
+
+Stringifier:
+ - util.inspect-like pretty printing
+
+This module behaves more smart when dealing with object and arrays, and does not always print newlines in them:
+
+```
+$ node -e 'console.log(require("./").stringify([[,,,],,,[,,,,]], {mode:"json"}))'
+[
+        [null, null, null],
+        null,
+        null,
+        [null, null, null, null]
+]
+```
+
+JSON.stringify will split this into 15 lines, and it's hard to read.
+
+Yet again, this feature comes with a performance hit, so if user experience matters to you more than performance, use this module. If your JSON will be consumed by machines, use JSON.stringify instead.
+
+As a rule of thumb, if you use "space" argument to indent your JSON, you'd better use this module instead.
 
 ## JSON5 syntax
+
+I support slighly modified version of JSON5, see https://groups.google.com/forum/#!topic/json5/3DjClVYI6Wg
+
+I started from ES5 specification and added a set of additional restrictions on top of ES5 spec. So I'd expect my implementation to be much closer to javascript. It's no longer an extension of json, but a reduction of ecmascript, which was my original intent.
 
 This JSON5 version is a subset of ES5 language, specification is here:
 
@@ -130,6 +169,7 @@ This is a language that defines data structures only, so following notes/restric
 
 Main authority here is ES5 spec, so strict backward JSON compatibility is not guaranteed.
 
+
 If you're unsure whether a behaviour of this library is a bug or not, you can run this test:
 
 ```javascript
@@ -145,33 +185,20 @@ eval('(function(){"use strict"\nreturn ('+String(something)+'\n)\n})()')
 If `something` meets all rules above. Parens and newlines in the example above are carefully placed so comments and another newlines will work properly, so don't look so impressed about that.
 
 
-## Modes of operation
-
-TODO: not yet working
-
-- simple:
-	no custom datatypes
-	no .toJSON/.toJSON5
-	for serializing simple json-compatible objects only (i.e. user-generated data)
-
-- full
-	custom datatypes
-	.toJSON/.toJSON5 present (prototype only)
-	for representing arbitrary data structures as close as possible
-
-- json:
-	no custom datatypes
-	.toJSON present
-	json compatible
-
 ## Weirdness of JSON5
+
+These are the parts that I don't particulary like, but see no good way to fix:
 
  - no elisions, `[,,,] -> [null,null,null]`
  - `[Object], [Circular]` aren't parsed
  - no way of nicely representing multiline strings
  - unicode property names are way to hard to implement
+ - Date and other custom objects
+ - incompatible with YAML (at least comments)
 
 ## Unicode support
+
+This version fully support unicode. But if you're writing JSON5 implementation and don't want to support it, you should follow these guidelines:
 
 ```javascript
 // 27 whitespace characters (unicode defines 26 characters, and ES5 spec also adds \uFEFF as a whitespace)
@@ -186,4 +213,5 @@ All json5 libraries MUST support 4 line terminator characters and 27 whitespace 
 Parsers that do not fully support unicode SHOULD treat all unknown characters starting with \x80 as unicode\_letter except for line terminators and whitespace characters. This way all valid json5 objects will be parsed correctly, but some invalid json5 objects will be parsed as well.
 
 Serializers that do not fully support unicode SHOULD treat all unknown characters starting with \x80 as control characters, and quote property names if they happen to be in there. This way all data will be serialized correctly.
+
 
