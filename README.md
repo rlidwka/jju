@@ -1,4 +1,3 @@
-
 JSON5-utils - JSON/JSON5 parser and serializer for JavaScript.
 
 ## Installation
@@ -30,9 +29,39 @@ JSON5.parse(text[, reviver])
 
 Options:
 
- - duplicate\_keys - what to do with duplicate keys (["ignore" | "throw" | "replace"]), default - "throw" - String
- - null\_prototype - create object as Object.create(null) instead of '{}', default is false unless duplicate\_keys is set to 'replace' - Boolean
- - reviver - reviver function (see JSON spec) - Function
+ - duplicate\_keys - what to do with duplicate keys (String, default="throw")
+   - "ignore" - ignore duplicate keys, including inherited ones
+   - "throw" - throw SyntaxError in case of duplicate keys, including inherited ones
+   - "replace" - replace duplicate keys, this is the default JSON.parse behaviour, unsafe
+   
+```javascript
+// 'ignore' will cause duplicated keys to be ignored:
+parse('{q: 1, q: 2}', {duplicate_keys: 'ignore'}) == {q: 1}
+parse('{hasOwnProperty: 1}', {duplicate_keys: 'ignore'}) == {}
+parse('{hasOwnProperty: 1, x: 2}', {duplicate_keys: 'ignore'}).hasOwnProperty('x') == true
+
+// 'throw' will cause SyntaxError in these cases:
+parse('{q: 1, q: 2}', {duplicate_keys: 'throw'}) == SyntaxError
+parse('{hasOwnProperty: 1}', {duplicate_keys: 'throw'}) == SyntaxError
+
+// 'replace' will replace duplicated keys with new ones:
+parse('{q: 1, q: 2}', {duplicate_keys: 'throw'}) == {q: 2}
+parse('{hasOwnProperty: 1}', {duplicate_keys: 'throw'}) == {hasOwnProperty: 1}
+parse('{hasOwnProperty: 1, x: 2}', {duplicate_keys: 'ignore'}).hasOwnProperty('x') == TypeError
+```
+
+
+ - null\_prototype - create object as Object.create(null) instead of '{}' (Boolean)
+ 
+   if `duplicate_keys != 'replace'`, default is **false**
+   
+   if `duplicate_keys == 'replace'`, default is **true**
+   
+   It is usually unsafe and not recommended to change this option to false in the last case.
+  
+ - reviver - reviver function - Function
+ 
+   This function should follow JSON specification
 
 ### JSON5.stringify() function
 
@@ -46,28 +75,35 @@ Options:
 JSON5.stringify(value[, options])
 
 // compatibility syntax
-JSON5.stringify(value[, replacer [, space])
+JSON5.stringify(value[, replacer [, indent])
 ```
 
 Options:
 
  - ascii - output ascii only (Boolean, default=false)
- - indent - indentation (string, number or boolean, default='\t')
- - quote - enquoting char (string, "'" or '"', default="'")
- - replacer - replacer function/array, see JSON spec
- - mode - operation mode, set it to 'json' if you want correct json in the output (string)
+   If this option is enabled, output will not have any characters except of 0x20-0x7f.
+ 
+ - indent - indentation (String, Number or Boolean, default='\t')
+   This option follows JSON specification.
+ 
+ - quote - enquoting char (String, "'" or '"', default="'")
+ - quote\_keys - whether keys quoting in objects is required or not (String, default=false)
+   If you want `{"q": 1}` instead of `{q: 1}`, set it to true.
+   
+ - replacer - replacer function or array (Function or Array)
+   This option follows JSON specification.
 
-indent = String/Number
-quote\_keys = boolean
-ascii = Boolean
-quote = string
-no\_trailing\_comma = true
-
-mode = json implies
-options.quote = '"'
-options.no\_trailing\_comma = true
-options.quote\_keys = true
-
+ - no\_trailing\_comma = don't output trailing comma (Boolean, default=false)
+   If this option is set, arrays like this `[1,2,3,]` will never be generated. Otherwise they may be generated for pretty printing.
+   
+ - mode - operation mode, set it to 'json' if you want correct json in the output (String)
+ 
+   Currently it's either 'json' or something else. If it is 'json', following options are implied:
+   
+   - options.quote = '"'
+   - options.no\_trailing\_comma = true
+   - options.quote\_keys = true
+   - '\x' literals are not used
 
 ## Advantages over existing JSON libraries
 
