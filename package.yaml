@@ -17,8 +17,11 @@ bugs:
 
 main: parse.js
 
+devDependencies:
+  mocha: '*'
+
 scripts:
-  test: 'node test/test.js'
+  test: 'mocha test/*.js'
 
 keywords:
   - json

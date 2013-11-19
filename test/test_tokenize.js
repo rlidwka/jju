@@ -10,9 +10,19 @@ function tokenize(arg) {
 	return result
 }
 
-assert.deepEqual(tokenize('123'), [ { raw: '123', value: 123, type: 'literal' }])
+function addTest(x, exp) {
+	function fn(){assert.deepEqual(tokenize(x), exp)}
+	
+	if (typeof(describe) === 'function') {
+		it('test_tokenize: ' + JSON.stringify(x), fn)
+	} else {
+		fn()
+	}
+}
 
-assert.deepEqual(tokenize(' /* zz */\r\n true /* zz */\n'), [ { raw: ' ', type: 'whitespace' },
+addTest('123', [ { raw: '123', value: 123, type: 'literal' }])
+
+addTest(' /* zz */\r\n true /* zz */\n', [ { raw: ' ', type: 'whitespace' },
   { raw: '/* zz */', type: 'comment' },
   { raw: '\r\n ', type: 'whitespace' },
   { raw: 'true', type: 'literal', value: true },
@@ -20,7 +30,7 @@ assert.deepEqual(tokenize(' /* zz */\r\n true /* zz */\n'), [ { raw: ' ', type: 
   { raw: '/* zz */', type: 'comment' },
   { raw: '\n', type: 'whitespace' } ])
 
-assert.deepEqual(tokenize('{q:123,  w : /*zz*/ 345 } '), 
+addTest('{q:123,  w : /*zz*/ 345 } ', 
 [ { raw: '{', type: 'separator' },
   { raw: 'q', type: 'literal', value: 'q' },
   { raw: ':', type: 'separator' },
@@ -38,14 +48,14 @@ assert.deepEqual(tokenize('{q:123,  w : /*zz*/ 345 } '),
   { raw: '}', type: 'separator' },
   { raw: ' ', type: 'whitespace' } ])
 
-assert.deepEqual(tokenize('null /* */// xxx\n//xxx'),
+addTest('null /* */// xxx\n//xxx',
 [ { raw: 'null', type: 'literal', value: null },
   { raw: ' ', type: 'whitespace' },
   { raw: '/* */', type: 'comment' },
   { raw: '// xxx\n', type: 'comment' },
   { raw: '//xxx', type: 'comment' } ]) 
 
-assert.deepEqual(tokenize('[1,2,[[],[1]],{},{1:2},{q:{q:{}}},]'),
+addTest('[1,2,[[],[1]],{},{1:2},{q:{q:{}}},]',
 [ { raw: '[', type: 'separator' },
   { raw: '1', type: 'literal', value: 1 },
   { raw: ',', type: 'separator' },

@@ -3,18 +3,26 @@ var assert = require('assert')
 var parse = require('../').parse
 
 function addTest(arg) {
-	//console.log('testing: ', arg)
-	try {
-		var x = parse(arg)
-	} catch(err) {
-		x = 'fail'
+	function fn() {
+		//console.log('testing: ', arg)
+		try {
+			var x = parse(arg)
+		} catch(err) {
+			x = 'fail'
+		}
+		try {
+			var z = eval('(function(){"use strict"\nreturn ('+String(arg)+'\n)\n})()')
+		} catch(err) {
+			z = 'fail'
+		}
+		assert.deepEqual(x, z)
 	}
-	try {
-		var z = eval('(function(){"use strict"\nreturn ('+String(arg)+'\n)\n})()')
-	} catch(err) {
-		z = 'fail'
+
+	if (typeof(describe) === 'function') {
+		it('test_parse: ' + JSON.stringify(arg), fn)
+	} else {
+		fn()
 	}
-	assert.deepEqual(x, z)
 }
 
 addTest('"\\uaaaa\\u0000\\uFFFF\\uFaAb"')

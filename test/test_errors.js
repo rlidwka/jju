@@ -2,14 +2,22 @@ var assert = require('assert')
 var parse = require('../').parse
 
 function addTest(arg, row, col) {
-	try {
-		parse(arg)
-	} catch(err) {
-		if (row !== undefined) assert.equal(err.row, row, 'wrong row: ' + err.row)
-		if (col !== undefined) assert.equal(err.column, col, 'wrong column: ' + err.column)
-		return
+	var fn = function() {
+		try {
+			parse(arg)
+		} catch(err) {
+			if (row !== undefined) assert.equal(err.row, row, 'wrong row: ' + err.row)
+			if (col !== undefined) assert.equal(err.column, col, 'wrong column: ' + err.column)
+			return
+		}
+		throw new Error("no error")
 	}
-	throw new Error("no error")
+
+	if (typeof(describe) === 'function') {
+		it('test_errors: ' + JSON.stringify(arg), fn)
+	} else {
+		fn()
+	}
 }
 
 // semicolon will be unexpected, so it indicates an error position
@@ -28,5 +36,4 @@ addTest('["\\\n",\n;', 2, 0)
 addTest('["\\\r\n",\n;', 2, 0)
 addTest('["\\\u2028",\n;', 2, 0)
 addTest('["\\\u2029",\n;', 2, 0)
-
 

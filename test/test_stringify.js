@@ -11,8 +11,16 @@ function deepEqual(x, y) {
 }
 
 function addTest(arg, arg2, arg3) {
-	deepEqual(parse(stringify(arg)), arg2 === undefined ? arg : arg2)
-	if (arg !== undefined) deepEqual(JSON.parse(stringify(arg, {mode: 'json', indent: false})), (arg3 === undefined ? (arg2 === undefined ? arg : arg2) : arg3))
+	function fn() {
+		deepEqual(parse(stringify(arg)), arg2 === undefined ? arg : arg2)
+		if (arg !== undefined) deepEqual(JSON.parse(stringify(arg, {mode: 'json', indent: false})), (arg3 === undefined ? (arg2 === undefined ? arg : arg2) : arg3))
+	}
+
+	if (typeof(describe) === 'function') {
+		it('test_stringify: ' + JSON.stringify(arg), fn)
+	} else {
+		fn()
+	}
 }
 
 addTest(0)
