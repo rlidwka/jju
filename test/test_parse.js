@@ -54,6 +54,17 @@ addTest('{ qef-:1 }')
 addTest('{ $$$:1 , ___: 3}')
 addTest('{3:1,2:1}')
 
+// whitespaces
+addTest('[1,\r\n2,\r3,\n]')
+'\u0020\u00A0\uFEFF\x09\x0A\x0B\x0C\x0D\u0085\u1680\u180E\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200A\u2028\u2029\u202F\u205F\u3000'.split('').forEach(function(x) {
+	addTest(x+'[1,'+x+'2]'+x)
+	addTest('"'+x+'"'+x)
+})
+'\u000A\u000D\u2028\u2029'.split('').forEach(function(x) {
+	addTest(x+'[1,'+x+'2]'+x)
+	addTest('"\\'+x+'"'+x)
+})
+
 if (process.version > 'v0.11.7') {
 	assert(Array.isArray(parse('{__proto__:[]}').__proto__))
 	assert.equal(parse('{__proto__:{xxx:5}}').xxx, undefined)
