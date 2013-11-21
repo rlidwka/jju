@@ -43,6 +43,28 @@ assert.strictEqual(d.get(['y','..z.']), 123)
 assert.strictEqual(d.has(['y','..z.']), true)
 assert.deepEqual(d.get(['y','a',2,'x']), 3)
 
+// set root
+assert.strictEqual(create(str).set('', 4).get(''), 4)
+assert.strictEqual(create(str).set('', null).get(''), null)
+assert.strictEqual(create(str).set('', {x:4}).get('x'), 4)
+assert.deepEqual(create(str).set('', [1,2,3]).get(''), [1,2,3])
+assert.strictEqual(create('1').set('', 4).get(''), 4)
+assert.strictEqual(create('null').set('', 4).get(''), 4)
+assert.strictEqual(create('[]').set('', 4).get(''), 4)
+assert.strictEqual(create('{}').set('', 4).get(''), 4)
+
+// set 1st level
+assert.deepEqual(create('{}').set('x', 4).get('x'), 4)
+assert.deepEqual(create('[]').set('x', 4).get('x'), 4)
+assert.deepEqual(create('1').set('x', 4).get('x'), 4)
+assert.deepEqual(create('null').set('x', 4).get('x'), 4)
+
+// controversial
+assert.deepEqual(create('[1,2,3]').set('x', 4).get(''), {x: 4})
+
+// getting crazy
+assert.deepEqual(create(str).set('a.b.c.d.e', 1).get('a'), {b:{c:{d:{e:1}}}})
+
 /*assert.equal(create('"test"').get(''), 'test')
 assert.equal(create('"test"').get([]), 'test')
 assert.equal(create('"test"').get(false), 'test')
