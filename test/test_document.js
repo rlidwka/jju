@@ -55,15 +55,17 @@ assert.strictEqual(create('{}').set('', 4).get(''), 4)
 
 // set 1st level
 assert.deepEqual(create('{}').set('x', 4).get('x'), 4)
-assert.deepEqual(create('[]').set('x', 4).get('x'), 4)
-assert.deepEqual(create('1').set('x', 4).get('x'), 4)
-assert.deepEqual(create('null').set('x', 4).get('x'), 4)
-
-// controversial
-assert.deepEqual(create('[1,2,3]').set('x', 4).get(''), {x: 4})
+//assert.deepEqual(create('1').set('x', 4).get('x'), 4)
+//assert.deepEqual(create('null').set('x', 4).get('x'), 4)
 
 // getting crazy
-assert.deepEqual(create(str).set('a.b.c.d.e', 1).get('a'), {b:{c:{d:{e:1}}}})
+//assert.deepEqual(create(str).set('a.b.c.d.e', 1).get('a'), {b:{c:{d:{e:1}}}})
+
+//node -e 'console.log(require("./document").Document("{}").set("",[1,2,3])+"")'[1, 2, 3]
+
+//alex@elu:~/json5-utils/lib$ node -e 'console.log(require("./document").Document("[]").set("0",[1,2,3]).get(""))'
+//[ [ 1, 2, 3 ] ]
+
 
 /*assert.equal(create('"test"').get(''), 'test')
 assert.equal(create('"test"').get([]), 'test')
