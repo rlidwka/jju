@@ -31,6 +31,7 @@ assert.deepEqual(d.get('y.a.10'), undefined)
 assert.deepEqual(d.has('y.a.0'), true)
 assert.deepEqual(d.has('y.a.10'), false)
 assert.deepEqual(d.get('y.a.2'), {x:3})
+assert.deepEqual(d.get('y.a.-1'), undefined)
 
 // controversial
 assert.strictEqual(d.get('y.s.0'), undefined)
@@ -60,6 +61,14 @@ assert.deepEqual(create('{}').set('x', 4).get('x'), 4)
 
 // getting crazy
 //assert.deepEqual(create(str).set('a.b.c.d.e', 1).get('a'), {b:{c:{d:{e:1}}}})
+
+// update: arrays
+assert.deepEqual(create("[1]").update([2,3])+"", '[2,3]')
+assert.deepEqual(create("[1]").update([2,3,4])+"", '[2,3,4]')
+assert.deepEqual(create("[]").update([2])+"", [2])
+assert.deepEqual(create("[2]").update([])+"", '[]')
+assert.deepEqual(create("[2,3,4]").update([2,3])+"", '[2,3]')
+assert.deepEqual(create("[2,3,4]").update([2])+"", '[2]')
 
 //node -e 'console.log(require("./document").Document("{}").set("",[1,2,3])+"")'[1, 2, 3]
 
