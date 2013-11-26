@@ -102,6 +102,12 @@ assert.equal(create("[0,]").set(1,{})+"", '[0,{},]')
 assert.equal(create("[    ]").set(0,{})+"", '[    {}]')
 assert.equal(create("[ 0  ,  ]").set(1,{})+"", '[ 0  ,  {},]')
 assert.equal(create("[ 0   ]").set(1,{})+"", '[ 0   ,{}]')
+assert.equal(create("{}").set('y',{})+"", '{y:{}}')
+assert.equal(create("{x:1}").set('y',{})+"", '{x:1,y:{}}')
+assert.equal(create("{x:1,}").set('y',{})+"", '{x:1,y:{},}')
+assert.equal(create("{    }").set('y',{})+"", '{    y:{}}')
+assert.equal(create("{ x:1  ,  }").set('y',{})+"", '{ x:1  ,  y:{},}')
+assert.equal(create("{ x:1   }").set('y',{})+"", '{ x:1   ,y:{}}')
 
 // deleting elements
 /*assert.deepEqual(create('[1,2,3]').set('2', undefined).get(''), [1,2])
