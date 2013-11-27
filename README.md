@@ -29,33 +29,32 @@ JSON5.parse(text[, reviver])
 
 Options:
 
- - duplicate\_keys - what to do with duplicate keys (String, default="throw")
-   - "ignore" - ignore duplicate keys, including inherited ones
-   - "throw" - throw SyntaxError in case of duplicate keys, including inherited ones
-   - "replace" - replace duplicate keys, this is the default JSON.parse behaviour, unsafe
-   
+ - reserved\_keys - what to do with reserved keys (String, default="ignore")
+   - "ignore" - ignore reserved keys
+   - "throw" - throw SyntaxError in case of reserved keys
+   - "replace" - replace reserved keys, this is the default JSON.parse behaviour, unsafe
+     
+     Reserved keys are keys that exist in an empty object (`hasOwnProperty`, `__proto__`, etc.).
+     
 ```javascript
-// 'ignore' will cause duplicated keys to be ignored:
-parse('{q: 1, q: 2}', {duplicate_keys: 'ignore'}) == {q: 1}
-parse('{hasOwnProperty: 1}', {duplicate_keys: 'ignore'}) == {}
-parse('{hasOwnProperty: 1, x: 2}', {duplicate_keys: 'ignore'}).hasOwnProperty('x') == true
+// 'ignore' will cause reserved keys to be ignored:
+parse('{hasOwnProperty: 1}', {reserved_keys: 'ignore'}) == {}
+parse('{hasOwnProperty: 1, x: 2}', {reserved_keys: 'ignore'}).hasOwnProperty('x') == true
 
 // 'throw' will cause SyntaxError in these cases:
-parse('{q: 1, q: 2}', {duplicate_keys: 'throw'}) == SyntaxError
-parse('{hasOwnProperty: 1}', {duplicate_keys: 'throw'}) == SyntaxError
+parse('{hasOwnProperty: 1}', {reserved_keys: 'throw'}) == SyntaxError
 
-// 'replace' will replace duplicated keys with new ones:
-parse('{q: 1, q: 2}', {duplicate_keys: 'throw'}) == {q: 2}
-parse('{hasOwnProperty: 1}', {duplicate_keys: 'throw'}) == {hasOwnProperty: 1}
-parse('{hasOwnProperty: 1, x: 2}', {duplicate_keys: 'ignore'}).hasOwnProperty('x') == TypeError
+// 'replace' will replace reserved keys with new ones:
+parse('{hasOwnProperty: 1}', {reserved_keys: 'throw'}) == {hasOwnProperty: 1}
+parse('{hasOwnProperty: 1, x: 2}', {reserved_keys: 'ignore'}).hasOwnProperty('x') == TypeError
 ```
 
 
  - null\_prototype - create object as Object.create(null) instead of '{}' (Boolean)
  
-   if `duplicate_keys != 'replace'`, default is **false**
+   if `reserved_keys != 'replace'`, default is **false**
    
-   if `duplicate_keys == 'replace'`, default is **true**
+   if `reserved_keys == 'replace'`, default is **true**
    
    It is usually unsafe and not recommended to change this option to false in the last case.
   
@@ -179,7 +178,7 @@ JSON5.parse(String(something))
 Should always be equal to:
 
 ```javascript
-eval('(function(){"use strict"\nreturn ('+String(something)+'\n)\n})()')
+eval('(function(){return ('+String(something)+'\n)\n})()')
 ```
 
 If `something` meets all rules above. Parens and newlines in the example above are carefully placed so comments and another newlines will work properly, so don't look so impressed about that.
