@@ -110,11 +110,20 @@ assert.equal(create("{ x:1  ,  }").set('y',{})+"", '{ x:1  ,  y:{},}')
 assert.equal(create("{ x:1   }").set('y',{})+"", '{ x:1   ,y:{}}')
 
 // deleting elements
-/*assert.deepEqual(create('[1,2,3]').set('2', undefined).get(''), [1,2])
-assert.deepEqual(create('[1,2,3]').set('1', undefined).get(''), [1,null,3])
-assert.deepEqual(create('[1,2,3]').set('1', undefined).set('2', undefined).get(''), [1])
-assert.deepEqual(create('[1,2,3]').set('2', undefined).set('1', undefined).get(''), [1])
-assert.deepEqual(create('[1]').set('0', undefined).get(''), [1])*/
+assert.throws(function() { create('[]').unset('0') }, /unset key .* out of bounds/)
+assert.throws(function() { create('[1,2]').unset('2') }, /unset key .* out of bounds/)
+assert.throws(function() { create('[1,2,3]').unset('0') }, /in the middle of an array/)
+
+// CommonJS assert spec is "awesome"
+assert.deepEqual(create('[1,2]').unset('1').get(''), [1])
+assert.deepEqual(create('[1,2]').unset('1').get('').length, 1)
+assert.deepEqual(create('[1,2,3]').unset('2').unset('1').get(''), [1])
+assert.deepEqual(create('[1,2,3]').unset('2').unset('1').get('').length, 1)
+assert.deepEqual(create('[1]').unset('0').get(''), [])
+assert.deepEqual(create('[1]').unset('0').get('').length, 0)
+
+assert.deepEqual(create('{x:{y:"z"}, z:4}').unset('x').get(''), {z:4})
+assert.throws(function() { create('[1,2]').unset('') }, /root/)
 
 // getting crazy
 //assert.deepEqual(create(str).set('a.b.c.d.e', 1).get('a'), {b:{c:{d:{e:1}}}})
@@ -125,7 +134,8 @@ assert.deepEqual(create("[1]").update([2,3,4])+"", '[2,3,4]')
 assert.deepEqual(create("[]").update([2])+"", '[2]')
 assert.deepEqual(create("[2]").update([])+"", '[]')
 assert.deepEqual(create("[2,3,4]").update([2,3])+"", '[2,3]')
-assert.deepEqual(create("[2,3,4]").update([2])+"", '[2]')
+assert.deepEqual(create("[2,3,4]").update([])+"", '[]')
+assert.deepEqual(create("[]").update([2,3,4])+"", '[2,3,4]')
 
 //assert.deepEqual(create("  [  ]  //").set(0,{})+""  [  ,{}]  //
 
