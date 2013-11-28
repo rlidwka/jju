@@ -21,19 +21,19 @@ function addTest(arg, row, col) {
 }
 
 // semicolon will be unexpected, so it indicates an error position
-addTest(';', 0, 0)
-addTest('\n\n\n;', 3, 0)
-addTest('\r\n;', 1, 0)
-addTest('\n\r;', 2, 0)
-addTest('\n\u2028;', 2, 0)
-addTest('\n\u2029;', 2, 0)
-addTest('[\n1\n,\n;', 3, 0)
-addTest('{\n;', 1, 0)
-addTest('{\n1\n:\n;', 3, 0)
+addTest(';', 1, 1)
+addTest('\n\n\n;', 4, 1)
+addTest('\r\n;', 2, 1)
+addTest('\n\r;', 3, 1)
+addTest('\n\u2028;', 3, 1)
+addTest('\n\u2029;', 3, 1)
+addTest('[\n1\n,\n;', 4, 1)
+addTest('{\n;', 2, 1)
+addTest('{\n1\n:\n;', 4, 1)
 
 // line continuations
-addTest('["\\\n",\n;', 2, 0)
-addTest('["\\\r\n",\n;', 2, 0)
-addTest('["\\\u2028",\n;', 2, 0)
-addTest('["\\\u2029",\n;', 2, 0)
+addTest('["\\\n",\n;', 3, 1)
+addTest('["\\\r\n",\n;', 3, 1)
+addTest('["\\\u2028",\n;', 3, 1)
+addTest('["\\\u2029",\n;', 3, 1)
 
