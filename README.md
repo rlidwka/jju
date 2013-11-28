@@ -8,9 +8,14 @@ npm install json5-utils
 
 ## Usage
 
-```javascript
-var JSON5 = require('json5-utils')
-```
+This module provides four functions to operate on JSON and JSON5 documents. 
+
+1. `JSON5.parse()` parses json/json5 text and returns a javascript value
+2. `JSON5.stringify()` converts javascript value to a json/json5 text
+3. `JSON5.tokenize()` parses json/json5 text and returns a list of tokens it consists of
+4. `JSON5.update()` changes json/json5 text, preserving original formatting
+
+All functions are able to work with a standard JSON documents in backward-compatible mode. `JSON5.parse()` and `JSON5.stringify()` are better in some cases, but slower than native versions. Detailed description see below.
 
 ### JSON5.parse() function
 
