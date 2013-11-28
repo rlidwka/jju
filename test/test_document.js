@@ -136,6 +136,22 @@ assert.deepEqual(create("[2]").update([])+"", '[]')
 assert.deepEqual(create("[2,3,4]").update([2,3])+"", '[2,3]')
 assert.deepEqual(create("[2,3,4]").update([])+"", '[]')
 assert.deepEqual(create("[]").update([2,3,4])+"", '[2,3,4]')
+assert.deepEqual(create(" /*zz*/ [ 2 , 3 , 4 ] /*xx*/ ").update([])+"", ' /*zz*/ [    ] /*xx*/ ')
+assert.deepEqual(create(" /*zz*/ [ ] /*xx*/ ").update([2,3,4])+"", ' /*zz*/ [ 2,3,4] /*xx*/ ')
+
+// update: objects
+assert.deepEqual(create("{x:1}").update({x:1,y:2,z:3})+"", '{x:1,y:2,z:3}')
+assert.deepEqual(create("{x:1}").update({x:2,z:3,t:4})+"", '{x:2,z:3,t:4}')
+assert.deepEqual(create("{}").update({x:1,y:2})+"", '{x:1,y:2}')
+assert.deepEqual(create("{x:1}").update({})+"", '{}')
+assert.deepEqual(create("{x:1,y:2}").update({x:1})+"", '{x:1}')
+assert.deepEqual(create(" /*zz*/ { x /*a*/ : /*b*/ 2 , y:3 , z //\n: 4  } /*xx*/ ").update({})+"", ' /*zz*/ {     } /*xx*/ ')
+assert.deepEqual(create(" /*zz*/ { } /*xx*/ ").update({x: 2, y: 3, z: 4})+"", ' /*zz*/ { x:2,y:3,z:4} /*xx*/ ')
+
+// remove trailing comma
+assert.deepEqual(create("{x:1,}").update({})+"", '{}')
+assert.deepEqual(create("[0,]").update([])+"", '[]')
+assert.deepEqual(create("[0 /*z*/ , /*z*/]").update([])+"", '[ /*z*/]')
 
 //assert.deepEqual(create("  [  ]  //").set(0,{})+""  [  ,{}]  //
 
