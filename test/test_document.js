@@ -153,6 +153,9 @@ assert.deepEqual(create("{x:1,}").update({})+"", '{}')
 assert.deepEqual(create("[0,]").update([])+"", '[]')
 assert.deepEqual(create("[0 /*z*/ , /*z*/]").update([])+"", '[ /*z*/]')
 
+// mode
+assert.equal(create('{"test":123}', {mode:'json'}).update({q:1,w:2})+'', '{"q":1,"w":2}')
+
 //assert.deepEqual(create("  [  ]  //").set(0,{})+""  [  ,{}]  //
 
 
