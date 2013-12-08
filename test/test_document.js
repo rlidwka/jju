@@ -156,6 +156,41 @@ assert.deepEqual(create("[0 /*z*/ , /*z*/]").update([])+"", '[ /*z*/]')
 // mode
 assert.equal(create('{"test":123}', {mode:'json'}).update({q:1,w:2})+'', '{"q":1,"w":2}')
 
+assert.equal(create('{1:2}').update({ a: 1, b: [1,2], c: 3})+'', '{a:1,b:[1, 2],c:3}')
+
+
+/*
+ *  real test
+ */
+var upd = { name: 'yapm',
+  version: '0.6.0',
+  description: 'npm wrapper allowing to use package.yaml instead of package.json',
+  author: { name: 'Alex Kocharin', email: 'alex@kocharin.ru' },
+  keywords: 
+   [ 'package manager',
+     'modules',
+     'install',
+     'package.yaml',
+     'package.json5',
+     'yaml',
+     'json5',
+     'npm' ],
+  preferGlobal: true,
+  homepage: 'https://npmjs.org/doc/',
+  repository: { type: 'git', url: 'https://github.com/rlidwka/yapm' },
+  bugs: { url: 'http://github.com/rlidwka/yapm/issues' },
+  main: './yapm.js',
+  bin: { yapm: './yapm.js' },
+  dependencies: { npm: '*', 'js-yaml': '*', through: '*', 'json5-utils': '*' },
+  devDependencies: { async: '*' },
+  optionalDependencies: { 'yaml-update': '*' },
+  test_nonascii: 'тест' }
+
+assert.deepEqual(create(create('{"garbage":"garbage"}').update(upd)).get(''), upd)
+assert.deepEqual(JSON.parse(create('{"garbage":"garbage"}', {mode:'json',legacy:true}).update(upd)), upd)
+
+//console.log(create('{"garbage":"garbage"}').update(upd)+'')
+
 //assert.deepEqual(create("  [  ]  //").set(0,{})+""  [  ,{}]  //
 
 
