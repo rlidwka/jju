@@ -30,8 +30,6 @@ function addTest(arg, bulk) {
 		} catch(err) {
 			z = 'fail'
 		}
-console.log(x)
-console.log(z)
 		assert.deepEqual(x, z)
 	}
 
