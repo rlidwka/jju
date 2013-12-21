@@ -3,7 +3,7 @@ var assert = require('assert')
 var parse = require('../').parse
 
 function addTest(arg) {
-	function fn() {
+	function fn_json5() {
 		//console.log('testing: ', arg)
 		try {
 			var x = parse(arg)
@@ -18,10 +18,29 @@ function addTest(arg) {
 		assert.deepEqual(x, z)
 	}
 
+	function fn_strict() {
+		//console.log('testing: ', arg)
+		try {
+			var x = parse(arg, {mode: 'json'})
+		} catch(err) {
+			x = 'fail'
+		}
+		try {
+			var z = JSON.parse(arg)
+		} catch(err) {
+			z = 'fail'
+		}
+console.log(x)
+console.log(z)
+		assert.deepEqual(x, z)
+	}
+
 	if (typeof(describe) === 'function') {
-		it('test_parse: ' + JSON.stringify(arg), fn)
+		it('test_parse_json5: ' + JSON.stringify(arg), fn_json5)
+		it('test_parse_strict: ' + JSON.stringify(arg), fn_strict)
 	} else {
-		fn()
+		fn_json5()
+		fn_strict()
 	}
 }
 
@@ -61,6 +80,12 @@ addTest('{ чйуач:1, щцкшчлм  : 4,}')
 addTest('{ qef-:1 }')
 addTest('{ $$$:1 , ___: 3}')
 addTest('{3:1,2:1}')
+
+// strict JSON test cases
+addTest('"\\xaa"')
+addTest('"\\0"')
+addTest('"\0"')
+addTest('"\\v"')
 
 // whitespaces
 addTest('[1,\r\n2,\r3,\n]')

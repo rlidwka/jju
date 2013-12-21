@@ -67,6 +67,8 @@ parse('{hasOwnProperty: 1, x: 2}', {reserved_keys: 'ignore'}).hasOwnProperty('x'
  - reviver - reviver function - Function
  
    This function should follow JSON specification
+   
+ - mode - operation mode, set it to 'json' if you want to throw on non-strict json files (String)
 
 ### jju.stringify() function
 
