@@ -2,7 +2,7 @@
 var assert = require('assert')
 var parse = require('../').parse
 
-function addTest(arg) {
+function addTest(arg, bulk) {
 	function fn_json5() {
 		//console.log('testing: ', arg)
 		try {
@@ -35,7 +35,7 @@ console.log(z)
 		assert.deepEqual(x, z)
 	}
 
-	if (typeof(describe) === 'function') {
+	if (typeof(describe) === 'function' && !bulk) {
 		it('test_parse_json5: ' + JSON.stringify(arg), fn_json5)
 		it('test_parse_strict: ' + JSON.stringify(arg), fn_strict)
 	} else {
@@ -81,11 +81,17 @@ addTest('{ qef-:1 }')
 addTest('{ $$$:1 , ___: 3}')
 addTest('{3:1,2:1}')
 
+for (var i=0; i<200; i++) {
+	addTest('"' + String.fromCharCode(i) + '"', true)
+}
+
 // strict JSON test cases
 addTest('"\\xaa"')
 addTest('"\\0"')
 addTest('"\0"')
 addTest('"\\v"')
+addTest('{null: 123}')
+addTest("{'null': 123}")
 
 // whitespaces
 addTest('[1,\r\n2,\r3,\n]')
