@@ -37,3 +37,6 @@ addTest('["\\\r\n",\n;', 3, 1)
 addTest('["\\\u2028",\n;', 3, 1)
 addTest('["\\\u2029",\n;', 3, 1)
 
+// bareword rewind
+addTest('nulz', 1, 1)
+
