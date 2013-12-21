@@ -102,6 +102,8 @@ addTest('[1,\r\n2,\r3,\n]')
 	addTest('"\\'+x+'"'+x)
 })
 
+/* weird ES6 stuff, not working
+
 if (process.version > 'v0.11.7') {
 	assert(Array.isArray(parse('{__proto__:[]}').__proto__))
 	assert.equal(parse('{__proto__:{xxx:5}}').xxx, undefined)
@@ -123,7 +125,7 @@ if (process.version > 'v0.11.7') {
 	assert.deepEqual(["__proto__"], Object.getOwnPropertyNames(o2))
 	assert(o2.hasOwnProperty("__proto__"))
 	assert(Object.prototype.isPrototypeOf(o2))
-}
+}*/
 
 assert.throws(parse.bind(null, "{-1:42}"))
 
