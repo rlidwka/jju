@@ -1,6 +1,7 @@
 
 var assert = require('assert')
 var create = require('../lib/document').Document
+var jju = require('..')
 
 var str = '{ x\r\n:\n1, y: {"..z.": 123, t: null, s:"123", a:[ 1,2,{x:3},] }}\n'
 var d = create(str)
@@ -158,6 +159,10 @@ assert.equal(create('{"test":123}', {mode:'json'}).update({q:1,w:2})+'', '{"q":1
 
 assert.equal(create('{1:2}').update({ a: 1, b: [1,2], c: 3})+'', '{a:1,b:[1, 2],c:3}')
 
+// undef
+assert.throws(function(){ jju.update(undefined, undefined) }, /root doc/)
+assert.equal(jju.update(undefined, 42), '42')
+assert.equal(jju.update(undefined, {x: 5}), '{x: 5}')
 
 /*
  *  real test
