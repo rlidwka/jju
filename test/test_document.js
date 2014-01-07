@@ -171,7 +171,7 @@ var upd = { name: 'yapm',
   version: '0.6.0',
   description: 'npm wrapper allowing to use package.yaml instead of package.json',
   author: { name: 'Alex Kocharin', email: 'alex@kocharin.ru' },
-  keywords: 
+  keywords:
    [ 'package manager',
      'modules',
      'install',

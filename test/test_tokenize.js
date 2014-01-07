@@ -12,7 +12,7 @@ function tokenize(arg) {
 
 function addTest(x, exp) {
 	function fn(){assert.deepEqual(tokenize(x), exp)}
-	
+
 	if (typeof(describe) === 'function') {
 		it('test_tokenize: ' + JSON.stringify(x), fn)
 	} else {
