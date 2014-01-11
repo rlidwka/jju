@@ -9,7 +9,7 @@ description: a set of utilities to operate on JSON / JSON5 documents
 author:
   name: Alex Kocharin
   email: alex@kocharin.ru
- 
+
 repository:
   type: git
   url: git://github.com/rlidwka/jju
@@ -30,5 +30,7 @@ keywords:
   - serializer
   - data
 
-license: WTFPL
+license:
+  type: WTFPL
+  url: http://www.wtfpl.net/txt/copying/
 
