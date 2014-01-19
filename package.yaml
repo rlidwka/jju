@@ -19,6 +19,7 @@ bugs:
 
 devDependencies:
   mocha: '*'
+  js-yaml: '*'
 
 scripts:
   test: 'mocha test/*.js'
