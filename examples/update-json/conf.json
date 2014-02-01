@@ -1,0 +1,19 @@
+{
+	"dependsOn": "0.10.0",
+
+	"commands": {
+		"www": "./commands/www",
+		"console": "./commands/repl"
+	},
+
+	"generators": {
+		"options": {
+			"engine": "ejs"
+		},
+
+		"modules": {
+			"new": "generate-new",
+			"backend": "generate-backend"
+		}
+	}
+}

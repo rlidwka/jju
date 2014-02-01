@@ -1,0 +1,14 @@
+{
+	"name": "jju",
+	"description": "a set of utilities to operate on JSON / JSON5 documents",
+	"repository": {
+		"type": "git",
+		"url" "git://github.com/rlidwka/jju"
+	}
+	"devDependencies": {
+		"mocha": "*"
+	},
+	"scripts": {
+		"test": "mocha test/*.js"
+	}
+}

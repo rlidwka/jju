@@ -1,0 +1,20 @@
+/*
+ *  This is an example of commented JSON (CJSON) file
+ *
+ *  Source: https://en.wikipedia.org/wiki/JSON
+ */
+{ "firstName": "John",
+  "lastName": "Smith",
+  "age": 25,
+
+  // this is an address
+  "address":
+   { "streetAddress": "21 2nd Street",
+     "city": "New York",
+     "state": "NY",
+     "postalCode": 10021 },
+
+  // these are phone numbers (duh)
+  "phoneNumbers":
+   [ { "type": "home", "number": "212 555-1234" },
+     { "type": "fax", "number": "646 555-4567" } ] }
