@@ -15,3 +15,7 @@ module.exports.__defineGetter__('update', function() {
 	return require('./lib/document').update
 })
 
+module.exports.__defineGetter__('analyze', function() {
+	return require('./lib/analyze').analyze
+})
+
