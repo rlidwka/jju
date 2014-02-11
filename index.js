@@ -19,3 +19,7 @@ module.exports.__defineGetter__('analyze', function() {
 	return require('./lib/analyze').analyze
 })
 
+module.exports.__defineGetter__('utils', function() {
+	return require('./lib/utils')
+})
+
