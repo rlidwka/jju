@@ -31,6 +31,9 @@ keywords:
   - serializer
   - data
 
+publishConfig:
+  registry: https://registry.npmjs.org/
+
 license:
   type: WTFPL
   url: http://www.wtfpl.net/txt/copying/
