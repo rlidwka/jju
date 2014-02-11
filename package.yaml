@@ -4,7 +4,7 @@
 name: jju
 
 version: 0.6.0
-description: a set of utilities to operate on JSON / JSON5 documents
+description: a set of utilities to work with JSON / JSON5 documents
 
 author:
   name: Alex Kocharin
