@@ -17,6 +17,8 @@ repository:
 bugs:
   url: https://github.com/rlidwka/jju/issues
 
+homepage: http://rlidwka.github.io/jju/
+
 devDependencies:
   mocha: '*'
   js-yaml: '*'
