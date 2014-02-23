@@ -1,0 +1,70 @@
+<!DOCTYPE html><html><head><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css"><style>textarea { font-family: monospace }
+tr.data:hover { cursor: pointer }</style><script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.0/jquery.min.js"></script><script src="jju.js"></script><script>var jju = require('jju')
+
+$(function() {
+ on_textarea_update()
+ $('textarea').keyup(function() {
+  setTimeout(on_textarea_update, 1)
+ })
+})
+
+$.fn.selectRange = function(start, end) {
+ return this.each(function() {
+  if (this.setSelectionRange) {
+   this.focus()
+   this.setSelectionRange(start, end)
+  } else if (this.createTextRange) {
+   var range = this.createTextRange()
+   range.collapse(true)
+   range.moveEnd('character', end)
+   range.moveStart('character', start)
+   range.select()
+  }
+ })
+}
+
+function on_textarea_update() {
+ try {
+  var tokens = jju.tokenize($('textarea').val())
+ } catch(err) {
+  return console.log(err)
+ }
+ 
+ function tr(html) {
+  return '<tr class="data">' + html + '</tr>'
+ }
+ 
+ function td(text) {
+  var node = $('<td>')
+  node.text(text)
+  return node[0].outerHTML
+ }
+ 
+ $('#tokens .data').remove()
+ 
+ var position = 0
+ for (var i=0; i<tokens.length; i++) {
+  var row = $(tr(
+   td(position) +
+   td(tokens[i].type) +
+   td(tokens[i].value) +
+   td(tokens[i].raw) +
+   td(tokens[i].stack)
+  ))
+  $('#tokens').append(row)
+  
+  !function(start, end) {
+   row.click(function() {
+    $('textarea').selectRange(start, end)
+   })
+  }(position, position + tokens[i].raw.length)
+  
+  position += tokens[i].raw.length
+ }
+}</script></head><body><div class="container"><div class="row"><div class="col-md-6"><table id="tokens" class="table table-hover table-condensed"><tr><th>Pos</th><th>Type</th><th>Value</th><th>Raw</th><th>Stack</th></tr></table></div><div class="col-md-6"><form role="form"><div class="form-group"><div class="col-sm-12"><label for="textarea" class="control-label">Copy-paste your package.json here:</label></div><div class="col-sm-12"><textarea id="textarea" rows="20" autofocus class="form-control">{ "name": "just-a-demo",
+  "version": "0.1.2",
+  "description": "blahblahblah",
+  "main": "test.js",
+  "scripts": { "test": "echo \"Error: no test specified\" && exit 1" },
+  "author": "John Doe <whoever@google.com>",
+  "license": "BSD-2-Clause" }</textarea></div></div></form></div></div></div></body></html>

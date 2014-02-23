@@ -1,0 +1,96 @@
+extends layout
+
+block append scripts
+	script.
+		var jju = require('jju')
+
+		$(function() {
+			$('.my-cool-editor .form-control').map(function(_, item) {
+				;(function(item) {
+					$(item).keyup(function() {
+						setTimeout(function() {
+							var value = item.value
+
+							if (item.id === 'author') {
+								var m = item.value.match(/^(.*) <(.*)>$/)
+								if (m) value = {
+									name: m[1],
+									email: m[2]
+								}
+							}
+
+							on_input_update(item.id, value)
+						}, 1)
+					})
+				})(item)
+			})
+
+			on_textarea_update()
+			$('textarea').keyup(function() {
+				setTimeout(on_textarea_update, 1)
+			})
+		})
+
+		function on_textarea_update() {
+			try {
+				var parsed = jju.parse($('textarea').val())
+
+				$('#name').val(parsed.name)
+				$('#version').val(parsed.version)
+				$('#description').val(parsed.description)
+
+				if (typeof(parsed.author) === 'object') {
+					$('#author').val(parsed.author.name + ' <' + parsed.author.email + '>')
+				} else {
+					$('#author').val(parsed.author)
+				}
+			} catch(err) {
+				console.log(err)
+			}
+		}
+
+		function on_input_update(name, value) {
+			var old_text = $('textarea').val()
+			var json = jju.parse(old_text)
+
+			if (value === '') {
+				delete json[name]
+			} else {
+				json[name] = value
+			}
+			$('textarea').val(jju.update(old_text, json))
+		}
+
+block body
+	+navigation('editor')
+	.container
+		.row
+			.col-md-6
+				form.form-horizontal(role='form')
+					.form-group.my-cool-editor
+						label.control-label.col-sm-2(for='name') Name
+						.col-sm-10
+							input#name.form-control(type='text', placeholder='foobar')
+						label.control-label.col-sm-2(for='version') Version
+						.col-sm-10
+							input#version.form-control(type='text', placeholder='1.2.3')
+						label.control-label.col-sm-2(for='description') Desc
+						.col-sm-10
+							input#description.form-control(type='text', placeholder='module that hopefully does something useful')
+						label.control-label.col-sm-2(for='author') Author
+						.col-sm-10
+							input#author.form-control(type='text', placeholder='My Name <my@email>')
+						label.control-label.col-sm-2(for='dependencies') Deps
+						.col-sm-10
+							input#dependencies.form-control(type='text', placeholder='')
+							input.form-control(type='text', placeholder='')
+							input.form-control(type='text', placeholder='')
+							input.form-control(type='text', placeholder='')
+			.col-md-6
+				form(role='form')
+					.form-group
+						.col-sm-12
+							label.control-label(for='textarea') Copy-paste your package.json here:
+						.col-sm-12
+							textarea#textarea.form-control(rows=20, autofocus)
+								+initial()
