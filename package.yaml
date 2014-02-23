@@ -23,8 +23,12 @@ devDependencies:
   mocha: '*'
   js-yaml: '*'
 
+  # linting tools
+  eslint: 'eslint/eslint'
+
 scripts:
   test: 'mocha test/*.js'
+  lint: 'eslint -c ./.eslint.yaml ./lib'
 
 keywords:
   - json
