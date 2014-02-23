@@ -360,14 +360,39 @@ var objectKeys = Object.keys || function (obj) {
   return keys;
 };
 
-},{"util/":3}],2:[function(require,module,exports){
+},{"util/":4}],2:[function(require,module,exports){
+if (typeof Object.create === 'function') {
+  // implementation from standard node.js 'util' module
+  module.exports = function inherits(ctor, superCtor) {
+    ctor.super_ = superCtor
+    ctor.prototype = Object.create(superCtor.prototype, {
+      constructor: {
+        value: ctor,
+        enumerable: false,
+        writable: true,
+        configurable: true
+      }
+    });
+  };
+} else {
+  // old school shim for old browsers
+  module.exports = function inherits(ctor, superCtor) {
+    ctor.super_ = superCtor
+    var TempCtor = function () {}
+    TempCtor.prototype = superCtor.prototype
+    ctor.prototype = new TempCtor()
+    ctor.prototype.constructor = ctor
+  }
+}
+
+},{}],3:[function(require,module,exports){
 module.exports = function isBuffer(arg) {
   return arg && typeof arg === 'object'
     && typeof arg.copy === 'function'
     && typeof arg.fill === 'function'
     && typeof arg.readUInt8 === 'function';
 }
-},{}],3:[function(require,module,exports){
+},{}],4:[function(require,module,exports){
 (function (process,global){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -957,32 +982,7 @@ function hasOwnProperty(obj, prop) {
 }
 
 }).call(this,require("/tmp/jju_demo/node_modules/browserify/node_modules/insert-module-globals/node_modules/process/browser.js"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./support/isBuffer":2,"/tmp/jju_demo/node_modules/browserify/node_modules/insert-module-globals/node_modules/process/browser.js":5,"inherits":4}],4:[function(require,module,exports){
-if (typeof Object.create === 'function') {
-  // implementation from standard node.js 'util' module
-  module.exports = function inherits(ctor, superCtor) {
-    ctor.super_ = superCtor
-    ctor.prototype = Object.create(superCtor.prototype, {
-      constructor: {
-        value: ctor,
-        enumerable: false,
-        writable: true,
-        configurable: true
-      }
-    });
-  };
-} else {
-  // old school shim for old browsers
-  module.exports = function inherits(ctor, superCtor) {
-    ctor.super_ = superCtor
-    var TempCtor = function () {}
-    TempCtor.prototype = superCtor.prototype
-    ctor.prototype = new TempCtor()
-    ctor.prototype.constructor = ctor
-  }
-}
-
-},{}],5:[function(require,module,exports){
+},{"./support/isBuffer":3,"/tmp/jju_demo/node_modules/browserify/node_modules/insert-module-globals/node_modules/process/browser.js":5,"inherits":2}],5:[function(require,module,exports){
 // shim for using process in browser
 
 var process = module.exports = {};
@@ -1085,13 +1085,17 @@ module.exports.analyze = function analyzeJSON(input, options) {
 		has_whitespace: false,
 		has_comments: false,
 		has_newlines: false,
+		has_trailing_comma: false,
 		indent: '',
 		newline: '\n',
+		quote: '"',
+		quote_keys: true,
 	}
 
 	var stats = {
 		indent: {},
 		newline: {},
+		quote: {},
 	}
 
 	for (var i=0; i<input.length; i++) {
@@ -1125,6 +1129,22 @@ module.exports.analyze = function analyzeJSON(input, options) {
 		if (input[i].type === 'comment') {
 			result.has_comments = true
 		}
+		if (input[i].type === 'key') {
+			if (input[i].raw[0] !== '"' && input[i].raw[0] !== "'") result.quote_keys = false
+		}
+
+		if (input[i].type === 'key' || input[i].type === 'literal') {
+			if (input[i].raw[0] === '"' || input[i].raw[0] === "'") {
+				stats.quote[input[i].raw[0]] = (stats.quote[input[i].raw[0]] || 0) + 1
+			}
+		}
+
+		if (input[i].type === 'separator' && input[i].raw === ',') {
+			for (var j=i+1; j<input.length; j++) {
+				if (input[j].type === 'literal' || input[j].type === 'key') break
+				if (input[j].type === 'separator') result.has_trailing_comma = true
+			}
+		}
 	}
 
 	for (var k in stats) {
@@ -1155,8 +1175,15 @@ function isObject(x) {
 	return typeof(x) === 'object' && x !== null
 }
 
-function value_to_tokenlist(value, stack, options, is_key) {
+function value_to_tokenlist(value, stack, options, is_key, indent) {
+	options = Object.create(options)
 	options._stringify_key = !!is_key
+
+	if (indent) {
+		options._prefix = indent.prefix.map(function(x) {
+			return x.raw
+		}).join('')
+	}
 
 	if (options._splitMin == null) options._splitMin = 0
 	if (options._splitMax == null) options._splitMax = 0
@@ -1164,7 +1191,7 @@ function value_to_tokenlist(value, stack, options, is_key) {
 	var stringified = stringify(value, options)
 
 	if (is_key) {
-		return [ { raw: stringified, type: 'literal', stack: stack, value: value } ]
+		return [ { raw: stringified, type: 'key', stack: stack, value: value } ]
 	}
 
 	options._addstack = stack
@@ -1172,7 +1199,6 @@ function value_to_tokenlist(value, stack, options, is_key) {
 		_addstack: stack,
 	})
 	result.data = null
-	options._addstack = null
 	return result
 }
 
@@ -1235,7 +1261,7 @@ function find_last_non_ws_token(tokens, begin, end) {
  * begin - the beginning of the object/array
  * end - last token of the last element (value or comma usually)
  */
-function detect_indent_style(tokens, is_array, begin, end, stack) {
+function detect_indent_style(tokens, is_array, is_inline, begin, end, stack_len) {
 	var result = {
 		sep1: [],
 		sep2: [],
@@ -1244,7 +1270,8 @@ function detect_indent_style(tokens, is_array, begin, end, stack) {
 		newline: [],
 	}
 
-	if (tokens[end].type === 'separator' && tokens[end].stack.length !== stack.length+1 && tokens[end].raw !== ',') {
+debugger
+	if (tokens[end].type === 'separator' && tokens[end].stack.length !== stack_len+1 && tokens[end].raw !== ',') {
 		// either a beginning of the array (no last element) or other weird situation
 		//
 		// just return defaults
@@ -1253,15 +1280,17 @@ function detect_indent_style(tokens, is_array, begin, end, stack) {
 
 	var level = tokens[end+1].stack.length
 
-	//                              ' "key"  : "value"  ,'
-	// skipping last separator, we're now here        ^^
-	if (tokens[end].type === 'separator')
-		end = find_last_non_ws_token(tokens, begin, end - 1)
-	if (end === false) return result
+	if (!is_inline) {
+		//                              ' "key"  : "value"  ,'
+		// skipping last separator, we're now here        ^^
+		if (tokens[end].type === 'separator')
+			end = find_last_non_ws_token(tokens, begin, end - 1)
+		if (end === false) return result
 
-	//                              ' "key"  : "value"  ,'
-	// skipping value                          ^^^^^^^
-	while(tokens[end].stack.length > level) end--
+		//                              ' "key"  : "value"  ,'
+		// skipping value                          ^^^^^^^
+		while(tokens[end].stack.length > level) end--
+	}
 
 	if (!is_array) {
 		while(is_whitespace(tokens[end].type)) {
@@ -1289,7 +1318,7 @@ function detect_indent_style(tokens, is_array, begin, end, stack) {
 			}
 		}
 
-		assert.equal(tokens[end].type, 'literal')
+		assert.equal(tokens[end].type, 'key')
 		end--
 	}
 
@@ -1325,6 +1354,15 @@ function Document(text, options) {
 	var stats = analyze(text, options)
 	if (options.indent == null) {
 		options.indent = stats.indent
+	}
+	if (options.quote == null) {
+		options.quote = stats.quote
+	}
+	if (options.quote_keys == null) {
+		options.quote_keys = stats.quote_keys
+	}
+	if (options.no_trailing_comma == null) {
+		options.no_trailing_comma = !stats.has_trailing_comma
 	}
 }
 
@@ -1413,13 +1451,13 @@ Document.prototype.set = function(path, value) {
 		// all good
 
 	} else if (!new_key) {
-		var newtokens = value_to_tokenlist(value, path, this._options)
 		// replace old value with a new one (or deleting something)
 		var pos_old = position
 		position = find_element_in_tokenlist(path[i], i, this._tokens, position[0], position[1])
 
 		if (value === undefined && position !== false) {
 			// deleting element (position !== false ensures there's something)
+			var newtokens = []
 
 			if (!Array.isArray(data)) {
 				// removing element from an object, `{x:1, key:CURRENT} -> {x:1}`
@@ -1432,7 +1470,7 @@ Document.prototype.set = function(path, value) {
 
 				// key
 				var pos2 = find_last_non_ws_token(this._tokens, pos_old[0], position[0] - 1)
-				assert.equal(this._tokens[pos2].type, 'literal')
+				assert.equal(this._tokens[pos2].type, 'key')
 				assert.equal(this._tokens[pos2].value, path[path.length-1])
 				position[0] = pos2
 			}
@@ -1450,6 +1488,12 @@ Document.prototype.set = function(path, value) {
 					position[1] = pos2
 				}
 			}
+
+		} else {
+			var indent = pos2 !== false
+			           ? detect_indent_style(this._tokens, Array.isArray(data), true, pos_old[0], position[1] - 1, i)
+			           : {}
+			var newtokens = value_to_tokenlist(value, path, this._options, false, indent)
 		}
 
 	} else {
@@ -1461,15 +1505,10 @@ Document.prototype.set = function(path, value) {
 		assert(pos2 !== false)
 
 		var indent = pos2 !== false
-		           ? detect_indent_style(this._tokens, Array.isArray(data), position[0] + 1, pos2, path_1)
+		           ? detect_indent_style(this._tokens, Array.isArray(data), false, position[0] + 1, pos2, i)
 		           : {}
 
-		var _prefix = this._options._prefix
-		this._options._prefix = indent.prefix.map(function(x) {
-			return x.raw
-		}).join('')
-		var newtokens = value_to_tokenlist(value, path, this._options)
-		this._options._prefix = _prefix
+		var newtokens = value_to_tokenlist(value, path, this._options, false, indent)
 
 		// adding leading whitespaces according to detected codestyle
 		var prefix = []
@@ -1700,7 +1739,7 @@ function parse(input, options) {
 
 	/* tokenize({
 	     raw: '...',
-	     type: 'whitespace'|'comment'|'literal'|'separator',
+	     type: 'whitespace'|'comment'|'key'|'literal'|'separator'|'newline',
 	     value: 'number'|'string'|'whatever',
 	     path: [...],
 	   })
@@ -1761,9 +1800,8 @@ function parse(input, options) {
 		lineno++
 	}
 
-	function parseGeneric(is_key) {
+	function parseGeneric() {
 		var result
-		//console.log('parse: =============\n', input.substr(position, 40))
 
 		while (position < length) {
 			tokenStart()
@@ -1786,22 +1824,51 @@ function parse(input, options) {
 			           //           + number       Infinity          NaN
 			       ||  (json5 && (chr === '+' || chr === 'I' || chr === 'N'))
 			) {
-				return tokenEnd(parseNumber(is_key), 'literal')
+				return tokenEnd(parseNumber(), 'literal')
 
-			} else if (chr === 'n' && !is_key) {
+			} else if (chr === 'n') {
 				parseKeyword('null')
 				return tokenEnd(null, 'literal')
 
-			} else if (chr === 't' && !is_key) {
+			} else if (chr === 't') {
 				parseKeyword('true')
 				return tokenEnd(true, 'literal')
 
-			} else if (chr === 'f' && !is_key) {
+			} else if (chr === 'f') {
 				parseKeyword('false')
 				return tokenEnd(false, 'literal')
 
+			} else {
+				position--
+				return tokenEnd(undefined)
+			}
+		}
+	}
+
+	function parseKey() {
+		var result
+
+		while (position < length) {
+			tokenStart()
+			var chr = input[position++]
+
+			if (chr === '"' || (chr === '\'' && json5)) {
+				return tokenEnd(parseString(chr), 'key')
+
+			} else if (chr === '{') {
+				tokenEnd(undefined, 'separator')
+				return parseObject()
+
+			} else if (chr === '[') {
+				tokenEnd(undefined, 'separator')
+				return parseArray()
+
+			} else if (chr === '.'
+			       ||  isDecDigit(chr)
+			) {
+				return tokenEnd(parseNumber(true), 'key')
+
 			} else if (json5
-			       &&  is_key
 			       &&  Uni.isIdentifierStart(chr) || (chr === '\\' && input[position === 'u'])) {
 				// unicode char or a unicode sequence
 				var rollback = position - 1
@@ -1811,7 +1878,7 @@ function parse(input, options) {
 					position = rollback
 					return tokenEnd(undefined)
 				} else {
-					return tokenEnd(result, 'literal')
+					return tokenEnd(result, 'key')
 				}
 
 			} else {
@@ -1909,7 +1976,7 @@ function parse(input, options) {
 
 		while (position < length) {
 			skipWhiteSpace()
-			var item1 = parseGeneric(json5)
+			var item1 = parseKey()
 			skipWhiteSpace()
 			tokenStart()
 			var chr = input[position++]
@@ -2026,7 +2093,7 @@ function parse(input, options) {
 		}
 	}
 
-	function parseNumber(no_sign) {
+	function parseNumber() {
 		// rewind because we don't know first char
 		position--
 
@@ -2051,7 +2118,7 @@ function parse(input, options) {
 
 		// ex: -5982475.249875e+29384
 		//     ^ skipping this
-		if ((chr === '-' || (chr === '+' && json5)) && !no_sign) chr = input[position++]
+		if (chr === '-' || (chr === '+' && json5)) chr = input[position++]
 
 		if (chr === 'N' && json5) {
 			parseKeyword('NaN')
@@ -2226,7 +2293,7 @@ function parse(input, options) {
 
 	skipWhiteSpace()
 	var return_value = parseGeneric()
-	if (return_value !== undefined) {
+	if (return_value !== undefined || position < length) {
 		skipWhiteSpace()
 
 		if (position >= length) {
