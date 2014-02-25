@@ -114,6 +114,27 @@ Options:
 
 ### jju.tokenize() function
 
+```javascript
+/*
+ * Main syntax:
+ *
+ * `text` - text to tokenize, type: String
+ * `options` - parser options, type: Object
+ */
+jju.tokenize(text[, options])
+```
+
+Options are the same as for the `jju.parse` function.
+
+Return value is an array of tokens, where each token is an object:
+
+ - raw (String) - raw text of this token, if you join all raw's, you will get the original document
+ - type (String) - type of the token, can be `whitespace`, `comment`, `key`, `literal`, `separator` or `newline`
+ - stack (Array) - path to the current token in the syntax tree
+ - value - value of the token if token is a `key` or `literal`
+
+You can check tokenizer for yourself using [this demo](http://rlidwka.github.io/jju/tokenizer.html).
+
 ### jju.analyze() function
 
 ```javascript
@@ -141,6 +162,38 @@ Return value is an object defining a programming style in which the document was
 
 ### jju.update() function
 
+```javascript
+/*
+ * Main syntax:
+ *
+ * `text` - original text, type: String
+ * `new_value` - new value you want to set
+ * `options` - parser or stringifier options, type: Object
+ */
+jju.tokenize(text, new_value[, options])
+```
+
+If you want to update a JSON document, here is the general approach:
+
+```javascript
+// here is your original JSON document:
+var input = '{"foo": "bar", "baz": 123}'
+
+// you need to parse it first:
+var json = jju.parse(input, {mode: 'json'})
+// json is { foo: 'bar', baz: 123 }
+
+// then you can change it as you like:
+json.foo = 'quux'
+json.hello = 'world'
+
+// then you run an update function to change the original json:
+var output = jju.update(input, json, {mode: 'json'})
+// output is '{"foo": "quux", "baz": 123, "hello": "world"}'
+```
+
+Look at [this demo](http://rlidwka.github.io/jju/editor.html) to test various types of json.
+
 ## Advantages over existing JSON libraries
 
 In a few cases it makes sense to use this module instead of built-in JSON methods.
@@ -151,7 +204,7 @@ Parser:
 In case of syntax error, JSON.parse does not return any good information to the user. This module does:
 
 ```
-$ node -e 'require("json5-utils").parse("[1,1,1,1,invalid]")'
+$ node -e 'require("jju").parse("[1,1,1,1,invalid]")'
 
 SyntaxError: Unexpected token 'i' at 0:9
 [1,1,1,1,invalid]
