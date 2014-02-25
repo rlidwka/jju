@@ -12,9 +12,9 @@ This module provides following functions:
 
 1. `jju.parse()` parses json/json5 text and returns a javascript value it corresponds to
 2. `jju.stringify()` converts javascript value to an appropriate json/json5 text
-3. `jju.tokenize()` parses json/json5 text and returns an array of tokens it consists of
-4. `jju.update()` changes json/json5 text, preserving original formatting as much as possible (*incomplete*)
-5. `jju.analyze()` parses json/json5 text and returns programming style in which it was written (*not yet implemented*)
+3. `jju.tokenize()` parses json/json5 text and returns an array of tokens it consists of ([see demo](http://rlidwka.github.io/jju/tokenizer.html))
+4. `jju.analyze()` parses json/json5 text and tries to guess indentation, quoting style, etc.
+5. `jju.update()` changes json/json5 text, preserving original formatting as much as possible ([see demo](http://rlidwka.github.io/jju/editor.html))
 
 All functions are able to work with a standard JSON documents. `jju.parse()` and `jju.stringify()` are better in some cases, but slower than native `JSON.parse()` and `JSON.stringify()` versions. Detailed description see below.
 
@@ -114,13 +114,32 @@ Options:
 
 ### jju.tokenize() function
 
-### jju.update() function
-
 ### jju.analyze() function
 
-Not yet implemented, and the API is TBA.
+```javascript
+/*
+ * Main syntax:
+ *
+ * `text` - text to analyze, type: String
+ * `options` - parser options, type: Object
+ */
+jju.analyze(text[, options])
+```
 
-It will probably be able to detect indentation, line endings, quote style and things like that.
+Options are the same as for the `jju.parse` function.
+
+Return value is an object defining a programming style in which the document was written.
+
+ - indent (String) - preferred indentation
+ - newline (String) - preferred newline
+ - quote (String) - `"` or `'` depending on which quote is preferred
+ - quote\_keys (Boolean) - `true` if unquoted keys were used at least once
+ - has\_whitespace (Boolean) - `true` if input has a whitespace token
+ - has\_comments (Boolean) - `true` if input has a comment token
+ - has\_newlines (Boolean) - `true` if input has a newline token
+ - has\_trailing\_comma (Boolean) - `true` if input has at least one trailing comma
+
+### jju.update() function
 
 ## Advantages over existing JSON libraries
 
