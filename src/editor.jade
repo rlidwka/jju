@@ -1,6 +1,7 @@
 extends layout
 
 block append scripts
+	script(src='src/bootstrap-tagsinput.min.js')
 	script.
 		var jju = require('jju')
 
@@ -25,6 +26,32 @@ block append scripts
 				})(item)
 			})
 
+			;(function() {
+				$(document).on('keyup', '.bootstrap-tagsinput', function() {
+					update_deps()
+				})
+				$(document).on('click', '.bootstrap-tagsinput', function() {
+					update_deps()
+				})
+				$(document).on('click', '.tag.label', function() {
+					update_deps()
+				})
+
+				var _old_items
+				function update_deps() {
+					var items = $('#dependencies').val()
+					if (items === _old_items) return
+					_old_items = items
+
+					var deps = {}
+					var json = jju.parse($('textarea').val())
+					$('#dependencies').tagsinput('items').forEach(function(x) {
+						deps[x] = (json.dependencies && json.dependencies[x]) || '*'
+					})
+					on_input_update('dependencies', deps)
+				}
+			})()
+
 			on_textarea_update()
 			$('textarea').keyup(function() {
 				setTimeout(on_textarea_update, 1)
@@ -44,8 +71,17 @@ block append scripts
 				} else {
 					$('#author').val(parsed.author)
 				}
+
+				var d = $('#dependencies')
+				d.val(Object.keys(parsed.dependencies).join(','))
+				d.tagsinput('removeAll')
+				Object.keys(parsed.dependencies).forEach(function(x) {
+					d.tagsinput('add', x)
+				})
+				d.tagsinput('refresh')
+				$('.error').html('').hide()
 			} catch(err) {
-				console.log(err)
+				$('.error').html(err).show()
 			}
 		}
 
@@ -82,10 +118,8 @@ block body
 							input#author.form-control(type='text', placeholder='My Name <my@email>')
 						label.control-label.col-sm-2(for='dependencies') Deps
 						.col-sm-10
-							input#dependencies.form-control(type='text', placeholder='')
-							input.form-control(type='text', placeholder='')
-							input.form-control(type='text', placeholder='')
-							input.form-control(type='text', placeholder='')
+							input#dependencies.form-control(type='text', placeholder='', data-role='tagsinput')
+				pre.error(style='display: none')
 			.col-md-6
 				form(role='form')
 					.form-group

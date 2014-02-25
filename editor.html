@@ -1,6 +1,7 @@
-<!DOCTYPE html><html><head><!--link(rel='stylesheet', href='https://netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css')--><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css"><link rel="stylesheet" href="src/default.min.css"><style>textarea { font-family: monospace; }
+<!DOCTYPE html><html><head><!--link(rel='stylesheet', href='https://netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css')--><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css"><link rel="stylesheet" href="src/style.css"><style>textarea { font-family: monospace; }
 tr.data:hover { cursor: pointer }
-.forkme { position: absolute; top: 0; right: 0; border: 0; z-index: 1 }</style><script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.0/jquery.min.js"></script><script src="https://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script><script src="jju.js"></script><script>var jju = require('jju')
+.forkme { position: absolute; top: 0; right: 0; border: 0; z-index: 1 }
+.bootstrap-tagsinput { width: 100% }</style><script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.0/jquery.min.js"></script><script src="https://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script><script src="jju.js"></script><script src="src/bootstrap-tagsinput.min.js"></script><script>var jju = require('jju')
 
 $(function() {
  $('.my-cool-editor .form-control').map(function(_, item) {
@@ -23,6 +24,32 @@ $(function() {
   })(item)
  })
  
+ ;(function() {
+  $(document).on('keyup', '.bootstrap-tagsinput', function() {
+   update_deps()
+  })
+  $(document).on('click', '.bootstrap-tagsinput', function() {
+   update_deps()
+  })
+  $(document).on('click', '.tag.label', function() {
+   update_deps()
+  })
+  
+  var _old_items
+  function update_deps() {
+   var items = $('#dependencies').val()
+   if (items === _old_items) return
+   _old_items = items
+   
+   var deps = {}
+   var json = jju.parse($('textarea').val())
+   $('#dependencies').tagsinput('items').forEach(function(x) {
+    deps[x] = (json.dependencies && json.dependencies[x]) || '*'
+   })
+   on_input_update('dependencies', deps)
+  }
+ })()
+ 
  on_textarea_update()
  $('textarea').keyup(function() {
   setTimeout(on_textarea_update, 1)
@@ -42,8 +69,17 @@ function on_textarea_update() {
   } else {
    $('#author').val(parsed.author)
   }
+  
+  var d = $('#dependencies')
+  d.val(Object.keys(parsed.dependencies).join(','))
+  d.tagsinput('removeAll')
+  Object.keys(parsed.dependencies).forEach(function(x) {
+   d.tagsinput('add', x)
+  })
+  d.tagsinput('refresh')
+  $('.error').html('').hide()
  } catch(err) {
-  console.log(err)
+  $('.error').html(err).show()
  }
 }
 
@@ -58,12 +94,16 @@ function on_input_update(name, value) {
  }
  $('textarea').val(jju.update(old_text, json))
 }
-</script></head><body><a href="https://github.com/rlidwka/jju"><img src="https://github-camo.global.ssl.fastly.net/38ef81f8aca64bb9a64448d0d70f1308ef5341ab/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f6461726b626c75655f3132313632312e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" class="forkme"></a><nav role="navigation" class="navbar navbar-default"><div class="container-fluid"><div class="collapse navbar-collapse"><ul class="nav navbar-nav"><li><a href="index.html">Home</a></li><li><a href="readme.html">Readme</a></li><li class="active"><a href="editor.html">Demo - Editor</a></li><li><a href="tokenizer.html">Demo - Tokenizer</a></li></ul></div></div></nav><div class="container"><div class="row"><div class="col-md-6"><form role="form" class="form-horizontal"><div class="form-group my-cool-editor"><label for="name" class="control-label col-sm-2">Name</label><div class="col-sm-10"><input id="name" type="text" placeholder="foobar" class="form-control"></div><label for="version" class="control-label col-sm-2">Version</label><div class="col-sm-10"><input id="version" type="text" placeholder="1.2.3" class="form-control"></div><label for="description" class="control-label col-sm-2">Desc</label><div class="col-sm-10"><input id="description" type="text" placeholder="module that hopefully does something useful" class="form-control"></div><label for="author" class="control-label col-sm-2">Author</label><div class="col-sm-10"><input id="author" type="text" placeholder="My Name &lt;my@email&gt;" class="form-control"></div><label for="dependencies" class="control-label col-sm-2">Deps</label><div class="col-sm-10"><input id="dependencies" type="text" placeholder="" class="form-control"><input type="text" placeholder="" class="form-control"><input type="text" placeholder="" class="form-control"><input type="text" placeholder="" class="form-control"></div></div></form></div><div class="col-md-6"><form role="form"><div class="form-group"><div class="col-sm-12"><label for="textarea" class="control-label">Copy-paste your package.json here:</label></div><div class="col-sm-12"><textarea id="textarea" rows="20" autofocus class="form-control">{ "name": "just-a-demo",
+</script></head><body><a href="https://github.com/rlidwka/jju"><img src="https://github-camo.global.ssl.fastly.net/38ef81f8aca64bb9a64448d0d70f1308ef5341ab/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f6461726b626c75655f3132313632312e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" class="forkme"></a><nav role="navigation" class="navbar navbar-default"><div class="container-fluid"><div class="collapse navbar-collapse"><ul class="nav navbar-nav"><li><a href="index.html">Home</a></li><li><a href="readme.html">Readme</a></li><li class="active"><a href="editor.html">Demo - Editor</a></li><li><a href="tokenizer.html">Demo - Tokenizer</a></li></ul></div></div></nav><div class="container"><div class="row"><div class="col-md-6"><form role="form" class="form-horizontal"><div class="form-group my-cool-editor"><label for="name" class="control-label col-sm-2">Name</label><div class="col-sm-10"><input id="name" type="text" placeholder="foobar" class="form-control"></div><label for="version" class="control-label col-sm-2">Version</label><div class="col-sm-10"><input id="version" type="text" placeholder="1.2.3" class="form-control"></div><label for="description" class="control-label col-sm-2">Desc</label><div class="col-sm-10"><input id="description" type="text" placeholder="module that hopefully does something useful" class="form-control"></div><label for="author" class="control-label col-sm-2">Author</label><div class="col-sm-10"><input id="author" type="text" placeholder="My Name &lt;my@email&gt;" class="form-control"></div><label for="dependencies" class="control-label col-sm-2">Deps</label><div class="col-sm-10"><input id="dependencies" type="text" placeholder="" data-role="tagsinput" class="form-control"></div></div></form><pre style="display: none" class="error"></pre></div><div class="col-md-6"><form role="form"><div class="form-group"><div class="col-sm-12"><label for="textarea" class="control-label">Copy-paste your package.json here:</label></div><div class="col-sm-12"><textarea id="textarea" rows="20" autofocus class="form-control">{ "name": "just-a-demo",
   "version": "0.1.2",
   "description": "blahblahblah",
   "main": "test.js",
   "scripts": { "test": "echo \"Error: no test specified\" && exit 1" },
   "author": "John Doe <whoever@google.com>",
+  "dependencies": {
+    "express": "3.x",
+    "jade": "~1.0"
+  },
   "license": "BSD-2-Clause" }
  
 // we also support
