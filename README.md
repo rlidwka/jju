@@ -10,11 +10,11 @@ npm install jju
 
 This module provides following functions:
 
-1. `jju.parse()` parses json/json5 text and returns a javascript value it corresponds to
-2. `jju.stringify()` converts javascript value to an appropriate json/json5 text
-3. `jju.tokenize()` parses json/json5 text and returns an array of tokens it consists of ([see demo](http://rlidwka.github.io/jju/tokenizer.html))
-4. `jju.analyze()` parses json/json5 text and tries to guess indentation, quoting style, etc.
-5. `jju.update()` changes json/json5 text, preserving original formatting as much as possible ([see demo](http://rlidwka.github.io/jju/editor.html))
+1. [jju.parse()](#jjuparse-function) parses json/json5 text and returns a javascript value it corresponds to
+2. [jju.stringify()](#jjustringify-function) converts javascript value to an appropriate json/json5 text
+3. [jju.tokenize()](#jjutokenize-function) parses json/json5 text and returns an array of tokens it consists of ([see demo](http://rlidwka.github.io/jju/tokenizer.html))
+4. [jju.analyze()](#jjuanalyze-function) parses json/json5 text and tries to guess indentation, quoting style, etc.
+5. [jju.update()](#jjuupdate-function) changes json/json5 text, preserving original formatting as much as possible ([see demo](http://rlidwka.github.io/jju/editor.html))
 
 All functions are able to work with a standard JSON documents. `jju.parse()` and `jju.stringify()` are better in some cases, but slower than native `JSON.parse()` and `JSON.stringify()` versions. Detailed description see below.
 
