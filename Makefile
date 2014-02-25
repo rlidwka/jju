@@ -9,12 +9,12 @@ clean:
 
 VPATH = src
 
-%.html: %.jade layout.jade Makefile package.yaml
-	jade -D -p $< < $< > $@
+%.html: %.jade layout.jade Makefile package.json5
+	./src/jade.js $< > $@
 
-jju.js: jju_wrapper.js Makefile package.yaml
+jju.js: jju_wrapper.js Makefile package.json5
 	browserify $< > $@
 
-node_modules: Makefile package.yaml
+node_modules: Makefile package.json5
 	yapm install
 

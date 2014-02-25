@@ -1,0 +1,29 @@
+// vim:syntax=javascript
+{
+	name: 'jju_demo',
+
+	version: '0.0.1',
+
+	author: {
+		name: 'Alex Kocharin',
+		email: 'alex@kocharin.ru',
+	},
+
+	repository: {
+		type: 'git',
+		url: 'git://github.com/rlidwka/jju',
+	},
+
+	dependencies: {
+		browserify: '^3.30.2',
+		jade: '^1.1.5',
+		jju: '^0.7.0',
+		marked: '^0.3.1',
+		'highlight.js': '^8.0.0',
+	},
+
+	license: {
+		type: 'WTFPL',
+		url: 'http://www.wtfpl.net/txt/copying/',
+	},
+}
