@@ -3,7 +3,7 @@
 # "jju" stands for "json/json5 utils"
 name: jju
 
-version: 0.7.0
+version: 1.0.0
 description: a set of utilities to work with JSON / JSON5 documents
 
 author:
