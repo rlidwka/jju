@@ -122,7 +122,9 @@ block body
 						label.control-label.col-sm-2(for='dependencies') Deps
 						.col-sm-10
 							input#dependencies.form-control(type='text', placeholder='', data-role='tagsinput')
-				pre.error(style='display: none')
+				pre.error
+					| Warning: you really need JavaScript to be enabled to get it working
+				script $('.error').html('').hide()
 			.col-md-6
 				form(role='form')
 					.form-group
