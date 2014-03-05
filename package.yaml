@@ -24,7 +24,7 @@ devDependencies:
   js-yaml: '*'
 
   # linting tools
-  eslint: 'eslint/eslint'
+  eslint: '>= 0.4.2'
 
 scripts:
   test: 'mocha test/*.js'
