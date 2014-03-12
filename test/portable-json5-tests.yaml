@@ -121,6 +121,11 @@ num-hex-zero:
   input: >
     0x0
 
+num-cut-hex:
+  output: !error
+  input: >
+    0x
+
 num-all-hex:
   output: 12841684683518
   input: >
