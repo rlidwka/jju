@@ -1,0 +1,261 @@
+# vi:set ts=2 sts=2 sw=2 et:
+#
+# Copyright (c) 2014 Alex Kocharin <alex@kocharin.ru>
+#
+# Permission to use, copy, modify, and/or distribute this software for any
+# purpose with or without fee is hereby granted, provided that the above
+# copyright notice and this permission notice appear in all copies.
+#
+# The original file is available here:
+# https://github.com/rlidwka/jju/tree/master/test/portable-json5-tests.yaml
+#
+# ----------------------------------------------------------------------------
+#
+# Portable JSON5 test suite.
+#
+# This is a collection of YAML documents, each document represents one test in
+# the suite.
+#
+# "input" is an arbitrary JSON5 you have to parse
+# "output" is a normalized JSON you have to compare your result with,
+#          or !error (null) if your input should result in parser error
+#
+# This document is an actual YAML document, and it may include fancy escape
+# sequences. If your platform does not support YAML, you might wish to
+# pre-process it using a generic YAML parser:
+#
+#  $ yapm install -g js-yaml
+#  $ js-yaml portable-json5-tests.yaml > portable-json5-tests.json
+#
+
+# Basic types in minimal form
+# ---------------------------
+
+type-null:
+  output: null
+  input: >
+    null
+
+# undefined is not supported,
+# null should be used instead
+type-no-undefined:
+  output: !error
+  input: >
+    undefined
+
+type-no-raw:
+  output: !error
+  input: >
+    foobar
+
+type-bool-true:
+  output: true
+  input: >
+    true
+
+type-bool-false:
+  output: false
+  input: >
+    false
+
+type-number:
+  output: 0
+  input: >
+    0
+
+type-string:
+  output: ""
+  input: >
+    ""
+
+type-array:
+  output: {}
+  input: >
+    {}
+
+type-object:
+  output: []
+  input: >
+    []
+
+# Special numbers
+# ---------------
+
+# note: it's hard to test this
+# just add `1/x < 0` check in your code somewhere
+num-negative-zero:
+  output: -0.0
+  input: >
+    -0
+
+num-nan:
+  output: .nan
+  input: >
+    NaN
+
+num-signed-nan:
+  output: .nan
+  input: >
+    +NaN
+
+num-positive-inf:
+  output: +.inf
+  input: >
+    Infinity
+
+num-negative-inf:
+  output: -.inf
+  input: >
+    -Infinity
+
+num-inf-exact-case:
+  output: !error
+  input: >
+    INFINITY
+
+# Hexadecimal numbers
+# -------------------
+
+num-hex-zero:
+  output: 0
+  input: >
+    0x0
+
+num-all-hex:
+  output: 12841684683518
+  input: >
+    0xBADF00DCAFE
+
+num-mixed-case:
+  output: 3735928559
+  input: >
+    0xDeAdBEef
+
+num-signed-hex:
+  output: 31
+  input: >
+    +0x1F
+
+num-negative-hex:
+  output: -31
+  input: >
+    -0x1f
+
+num-bad-hex:
+  output: !error
+  input: >
+    0xBADxF00D
+
+num-no-hex-float:
+  output: !error
+  input: >
+    0x12.345
+
+num-hex-exp:
+  output: 4836
+  input: >
+    0x0012e4
+
+# Octal numbers
+# -------------
+
+# Octals are primarily used in config files
+# to set up a file mask (like 0777)
+#
+# Note: they will have 0o12345 syntax instead
+# of 012345 in the ES6, so we'll need to switch
+# as well in the future
+
+num-octal:
+  output: 342391
+  input: >
+    01234567
+
+num-octal-zeroes:
+  output: -24000
+  input: >
+    -000000056700
+
+num-bad-octal:
+  output: !error
+  input: >
+    012345678
+
+num-no-octal-float:
+  output: !error
+  input: >
+    012.345
+
+num-no-octal-exp:
+  output: !error
+  input: >
+    0123e4
+
+# Floating point numbers
+# ----------------------
+
+num-float:
+  output: 123.456
+  input: >
+    123.456
+
+num-signed-foat:
+  output: -0.00098765
+  input: >
+    -0.00098765
+
+num-omit-trailing-mantissa:
+  output: 1234000
+  input: >
+    1234.e3
+
+num-omit-leading-mantissa:
+  output: -123.4
+  input: >
+    -.1234e3
+
+num-bad-float:
+  output: !error
+  input: >
+    0.12.345
+
+num-bad-sum:
+  output: !error
+  input: >
+    0.12+345
+
+num-uc-exp:
+  output: -1230000
+  input: >
+    -123E+4
+
+num-float-exp:
+  output: 123000
+  input: >
+    0.0123e7
+
+num-bad-exp:
+  output: !error
+  input: >
+    123e7.3
+
+num-bad-char:
+  output: !error
+  input: >
+    123a456
+
+num-no-exp:
+  output: !error
+  input: >
+    123e
+
+num-zero-exp:
+  output: -0.0
+  input: >
+    -.00e-0
+
+num-dec-base-signed-exp:
+  output: 0.00000123
+  input: >
+    1230000E-012
+
