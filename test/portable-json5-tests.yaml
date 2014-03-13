@@ -379,6 +379,10 @@ string-win-continuation:
   output: "foobar"
   input: "'foo\\\r\nbar'"
 
+string-win-reverse-continuation:
+  output: !error
+  input: "'foo\\\n\rbar'"
+
 string-unicode-continuation:
   output: "foobarbaz"
   input: "'foo\\\u2028bar\\\u2029baz'"
@@ -415,6 +419,50 @@ string-control-char:
 
 # Array literals
 # --------------
+
+array-all-types:
+  output: [1.2,"3,4",{},[],null,+.inf]
+  input: |
+    [1.2,"3,4",{},[],null,Infinity]
+
+array-trailing-comma:
+  output: [1,2,3,4]
+  input: |
+    [1,2,3,4,]
+
+array-leading-comma-style:
+  output: [quux,foo,bar,baz]
+  input: |
+    [ 'quux'
+    , 'foo'
+    , 'bar'
+    , 'baz'
+    ]
+
+array-incomplete:
+  output: !error
+  input: |
+    [1,2,3,[]
+
+array-nested:
+  output: [[[[[[]]]]],[[],[]]]
+  input: |
+    [[[[[[/*[]*/]]]]],[[],[]]]
+
+array-isnt-object:
+  output: !error
+  input: |
+    [1:2]
+
+array-no-single-comma:
+  output: !error
+  input: |
+    [,]
+
+array-no-elisions:
+  output: !error
+  input: |
+    [1,,2,3]
 
 # Comments
 # --------
@@ -453,6 +501,13 @@ comment-in-token:
   output: !error
   input:
     123/*comment*/456
+
+comment-java-style:
+  output: 123
+  input:
+    /*****************/
+    123
+    /*****************/
 
 # Whitespace
 # ----------
