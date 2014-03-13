@@ -13,23 +13,25 @@
 #
 # Portable JSON5 test suite.
 #
-# This is a collection of YAML documents, each document represents one test in
-# the suite.
+# This file contains an actual YAML data and it may include fancy syntax.
+# If your platform does not support YAML, you might wish to pre-process it
+# using a generic YAML parser.
+#
+
+%YAML 1.2
+---
 #
 # "input" is an arbitrary JSON5 you have to parse
 # "output" is a normalized JSON you have to compare your result with,
 #          or !error (null) if your input should result in parser error
 #
-# This document is an actual YAML document, and it may include fancy escape
-# sequences. If your platform does not support YAML, you might wish to
-# pre-process it using a generic YAML parser:
-#
-#  $ yapm install -g js-yaml
-#  $ js-yaml portable-json5-tests.yaml > portable-json5-tests.json
-#
 
 # Basic types in minimal form
 # ---------------------------
+
+type-no-data:
+  output: !error
+  input: ''
 
 type-null:
   output: null
@@ -264,3 +266,247 @@ num-dec-base-signed-exp:
   input: >
     1230000E-012
 
+# String literals
+# ---------------
+
+string-double-quotes:
+  output: foobar
+  input: >
+    "foobar"
+
+string-single-quotes:
+  output: foobar
+  input: >
+    'foobar'
+
+string-octal-escape:
+  output: "\x1b[1;32mhi\x1b[m??"
+  input: >
+    '\033[1;32mhi\033[m\077\077'
+
+string-octal-two-digits:
+  output: "\n\x1c\x2e\x07890\x01"
+  input: >
+    '\12\34\56\78\90\1'
+
+string-octal-three-digits:
+  output: "\n34.78\xff 0"
+  input: >
+    '\01234\5678\377\400'
+
+string-hex-escape:
+  output: "\x01\x23\xab\xcd\xef"
+  input: >
+    "\x01\x23\xab\xCd\xEF"
+
+# \0 is *not* an octal escape sequence,
+# and is allowed even in strict mode
+string-zero-point:
+  output: "\0"
+  input: >
+    '\0'
+
+string-escape-double-quotes:
+  output: "\"''"
+  input: >
+    "\"'\'"
+
+string-escape-single-quotes:
+  output: "   '\"\"   "
+  input: >
+    '   \'"\"   '
+
+string-escape-json-chars:
+  output: "\\\/\b\f\n\r\t"
+  input: >
+    "\\\/\b\f\n\r\t"
+
+# this character was left out of
+# json spec for whatever reason
+string-escape-slash-v:
+  output: "\v"
+  input: >
+    "\v"
+
+string-unicode-escape:
+  output: "\u0000\uffffx\ufeff\u1234\u9f6a\u2028\uabcd"
+  input: >
+    "\u0000\uFFFFx\uFeFf\u1234\u9F6a\u2028\uabcd"
+
+string-arbitrary-escape:
+  output: "X12Uqwe\r\tyiopasd\fghjklzc\u000b\b\nm9 "
+  input: >
+    '\X12\U\q\w\e\r\t\y\i\o\p\a\s\d\f\g\h\j\k\l\z\c\v\b\n\m\9\ '
+
+string-bad-unicode:
+  output: !error
+  input: >
+    '\uEFGH'
+
+string-incomplete-unicode:
+  output: !error
+  input: >
+    '\u\8'
+
+string-bad-hex:
+  output: !error
+  input: >
+    '\xFG'
+
+string-incomplete-hex:
+  output: !error
+  input: >
+    '\x\8'
+
+string-open:
+  output: !error
+  input: >
+    "\\\\\\\\\\\\\"
+
+string-not-open:
+  output: "\\\\\\\\\\\\\\"
+  input: >
+    "\\\\\\\\\\\\\\"
+
+string-continuation:
+  output: "  foo    bar   "
+  input: >
+    "  foo \
+       bar \
+      "
+
+string-win-continuation:
+  output: "foobar"
+  input: "'foo\\\r\nbar'"
+
+string-unicode-continuation:
+  output: "foobarbaz"
+  input: "'foo\\\u2028bar\\\u2029baz'"
+
+string-multi-bad-continuation:
+  output: !error
+  input: >
+    foo\
+
+    bar
+
+string-bad-ending:
+  output: !error
+  input: "'foo\rbar'"
+
+string-bad-ending-2028:
+  output: !error
+  input: "'foo\u2028bar'"
+
+string-bad-ending-2029:
+  output: !error
+  input: "'foo\u2029bar'"
+
+string-literal-unicode:
+  output: "foo\uFEFF\u2030bar\u1234"
+  input: "'foo\uFEFF\u2030bar\u1234'"
+
+string-control-char:
+  output: "\x00\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0b\x0c\x0e\x0f"
+  input: "'\x00\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0b\x0c\x0e\x0f'"
+
+# Object literals
+# ---------------
+
+# Array literals
+# --------------
+
+# Comments
+# --------
+
+comment-single:
+  output: foobar
+  input: |
+    // blahblah
+    "foobar"
+    // another one
+
+comment-multi:
+  output: foobar
+  input: |
+    /*
+     * 123
+     */
+    "foobar"
+    /**/
+
+comment-single-newlines:
+  output: [ 123, 456, 789 ]
+  input: "[// foo\r123,// bar\u2028456,// baz\u2029789]"
+
+comment-inside:
+  output: [123, '// foo', '/* bar']
+  input: >
+    [
+      /*
+      " // */ 123, // ",
+      "// foo",
+      '/* bar',
+    ]
+
+comment-in-token:
+  output: !error
+  input:
+    123/*comment*/456
+
+# Whitespace
+# ----------
+
+ws-no-whitespace:
+  output: {"foo":bar,bar:["qwe",null,[],{}],"baz":123}
+  input: '{foo:"bar","bar":["qwe",null,[],{}],"baz":123}'
+
+ws-allow-prefix:
+  output: 123
+  input: " \t123"
+
+ws-unicode-spaces:
+  output: { foo : 123 }
+  input: "
+    \u0020\u00A0\uFEFF
+    {
+    \x09\x0A\x0B\x0C\x0D\u0085\u1680\u180E
+      foo
+    \u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200A
+      :
+    \u2028\u2029\u202F\u205F\u3000
+      123
+    \uFEFF
+    }"
+
+ws-unicode-newlines:
+  output: [ 123, 456 ]
+  input: "
+    [
+      \u000D
+      123,
+      \u2028
+      456,
+      \u2029
+    ]
+    "
+
+# Multiple tokens
+# ---------------
+
+multi-string-nospace:
+  output: !error
+  input: '"foo""bar"'
+
+multi-string:
+  output: !error
+  input: '"foo" "bar"'
+
+multi-array:
+  output: !error
+  input: '[0] [0]'
+
+multi-object:
+  output: !error
+  input: '{} {}'
+...
