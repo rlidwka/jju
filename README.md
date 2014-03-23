@@ -189,7 +189,7 @@ json.hello = 'world'
 
 // then you run an update function to change the original json:
 var output = jju.update(input, json, {mode: 'json'})
-// outputtis '{"foo": "quux", "baz": 123, "hello": "world"}'
+// output is '{"foo": "quux", "baz": 123, "hello": "world"}'
 ```
 
 Look at [this demo](http://rlidwka.github.io/jju/editor.html) to test various types of json.
