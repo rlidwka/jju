@@ -20,11 +20,11 @@ bugs:
 homepage: http://rlidwka.github.io/jju/
 
 devDependencies:
-  mocha: '*'
-  js-yaml: '*'
+  mocha: '>=1.21.0'
+  js-yaml: '>=3.1.0'
 
   # linting tools
-  eslint: '>= 0.4.2'
+  eslint: '~0.4.2'
 
 scripts:
   test: 'mocha test/*.js'
