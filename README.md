@@ -1,5 +1,9 @@
 `jju` - a set of utilities to work with JSON / JSON5 documents
 
+[![npm version badge](https://img.shields.io/npm/v/jju.svg)](https://www.npmjs.org/package/jju)
+[![travis badge](http://img.shields.io/travis/rlidwka/jju.svg)](https://travis-ci.org/rlidwka/jju)
+[![downloads badge](http://img.shields.io/npm/dm/jju.svg)](https://www.npmjs.org/package/jju)
+
 ## Installation
 
 ```
