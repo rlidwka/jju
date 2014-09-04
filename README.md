@@ -101,6 +101,9 @@ Options:
  - quote\_keys - whether keys quoting in objects is required or not (String, default=false)
    If you want `{"q": 1}` instead of `{q: 1}`, set it to true.
 
+ - sort\_keys - sort all keys while stringifying (Boolean or Function, default=false)
+   By default sort order will depend on implementation, with v8 it's insertion order. If set to `true`, all keys (but not arrays) will be sorted alphabetically. You can provide your own sorting function as well.
+
  - replacer - replacer function or array (Function or Array)
    This option follows JSON specification.
 
