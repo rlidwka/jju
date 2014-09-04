@@ -80,3 +80,6 @@ assert.equal(expected, stringify(array, {indent: false}))
 
 assert.strictEqual(stringify([1,2,3], function(){}), undefined)
 
+// don't stringify prototype
+assert.equal('{a: 1}', stringify({a:1,__proto__:{b:2}}))
+
