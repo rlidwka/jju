@@ -1,4 +1,3 @@
-
 var assert = require('assert')
 var create = require('../lib/document').Document
 var jju = require('..')

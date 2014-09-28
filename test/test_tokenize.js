@@ -2,22 +2,22 @@ var assert = require('assert')
 var parse = require('../').parse
 
 function tokenize(arg) {
-	var result = []
-	parse(arg, {_tokenize: function(smth) {
-		result.push(smth)
-	}})
-	assert.deepEqual(result.map(function(x){return x.raw}).join(''), arg)
-	return result
+  var result = []
+  parse(arg, {_tokenize: function(smth) {
+    result.push(smth)
+  }})
+  assert.deepEqual(result.map(function(x){return x.raw}).join(''), arg)
+  return result
 }
 
 function addTest(x, exp) {
-	function fn(){assert.deepEqual(tokenize(x), exp)}
+  function fn(){assert.deepEqual(tokenize(x), exp)}
 
-	if (typeof(describe) === 'function') {
-		it('test_tokenize: ' + JSON.stringify(x), fn)
-	} else {
-		fn()
-	}
+  if (typeof(describe) === 'function') {
+    it('test_tokenize: ' + JSON.stringify(x), fn)
+  } else {
+    fn()
+  }
 }
 
 addTest('123', [ { raw: '123', value: 123, type: 'literal', stack: [] }])

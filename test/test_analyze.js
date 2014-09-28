@@ -2,13 +2,13 @@ var _assert = require('assert')
 var analyze = require('../').analyze
 
 function addTest(a, b) {
-	if (typeof(describe) === 'function') {
-		it('test_analyze: ' + a + ' == ' + b, function() {
-			_assert.equal(a, b)
-		})
-	} else {
-		_assert.equal(a, b)
-	}
+  if (typeof(describe) === 'function') {
+    it('test_analyze: ' + a + ' == ' + b, function() {
+      _assert.equal(a, b)
+    })
+  } else {
+    _assert.equal(a, b)
+  }
 }
 
 var t = analyze(JSON.stringify(require('os').networkInterfaces()))

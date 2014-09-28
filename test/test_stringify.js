@@ -1,26 +1,25 @@
-
 var assert = require('assert')
 var parse = require('../').parse
 var stringify = require('../').stringify
 
 function deepEqual(x, y) {
-	if (Number.isNaN(x)) {
-		return assert(Number.isNaN(y))
-	}
-	assert.deepEqual(x, y)
+  if (Number.isNaN(x)) {
+    return assert(Number.isNaN(y))
+  }
+  assert.deepEqual(x, y)
 }
 
 function addTest(arg, arg2, arg3) {
-	function fn() {
-		deepEqual(parse(stringify(arg)), arg2 === undefined ? arg : arg2)
-		if (arg !== undefined) deepEqual(JSON.parse(stringify(arg, {mode: 'json', indent: false})), (arg3 === undefined ? (arg2 === undefined ? arg : arg2) : arg3))
-	}
+  function fn() {
+    deepEqual(parse(stringify(arg)), arg2 === undefined ? arg : arg2)
+    if (arg !== undefined) deepEqual(JSON.parse(stringify(arg, {mode: 'json', indent: false})), (arg3 === undefined ? (arg2 === undefined ? arg : arg2) : arg3))
+  }
 
-	if (typeof(describe) === 'function') {
-		it('test_stringify: ' + JSON.stringify(arg), fn)
-	} else {
-		fn()
-	}
+  if (typeof(describe) === 'function') {
+    it('test_stringify: ' + JSON.stringify(arg), fn)
+  } else {
+    fn()
+  }
 }
 
 addTest(0)

@@ -2,23 +2,23 @@ var assert = require('assert')
 var parse = require('../').parse
 
 function addTest(arg, row, col, errRegExp) {
-	var fn = function() {
-		try {
-			parse(arg)
-		} catch(err) {
-			if (row !== undefined) assert.equal(err.row, row, 'wrong row: ' + err.row)
-			if (col !== undefined) assert.equal(err.column, col, 'wrong column: ' + err.column)
-			if (errRegExp) assert(errRegExp.exec(err.message))
-			return
-		}
-		throw new Error("no error")
-	}
+  var fn = function() {
+    try {
+      parse(arg)
+    } catch(err) {
+      if (row !== undefined) assert.equal(err.row, row, 'wrong row: ' + err.row)
+      if (col !== undefined) assert.equal(err.column, col, 'wrong column: ' + err.column)
+      if (errRegExp) assert(errRegExp.exec(err.message))
+      return
+    }
+    throw Error("no error")
+  }
 
-	if (typeof(describe) === 'function') {
-		it('test_errors: ' + JSON.stringify(arg), fn)
-	} else {
-		fn()
-	}
+  if (typeof(describe) === 'function') {
+    it('test_errors: ' + JSON.stringify(arg), fn)
+  } else {
+    fn()
+  }
 }
 
 // semicolon will be unexpected, so it indicates an error position
@@ -48,9 +48,9 @@ addTest('blah', 1, 1, /Unexpected token 'b'/)
 addTest('', 1, 1, /No data.*empty input/)
 
 try {
-	parse('{{{{{{{{{')
+  parse('{{{{{{{{{')
 } catch(err) {
-	var x = err.stack.match(/parseObject/g)
-	assert(!x || x.length < 2, "shouldn't blow up the stack with internal calls")
+  var x = err.stack.match(/parseObject/g)
+  assert(!x || x.length < 2, "shouldn't blow up the stack with internal calls")
 }
 
