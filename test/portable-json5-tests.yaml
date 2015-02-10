@@ -868,7 +868,7 @@ ws-unicode-spaces:
   input: "
     \u0020\u00A0\uFEFF
     {
-    \x09\x0A\x0B\x0C\x0D\u0085\u1680\u180E
+    \x09\x0A\x0B\x0C\x0D\u1680\u180E
       foo
     \u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200A
       :
