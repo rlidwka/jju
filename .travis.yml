@@ -1,9 +1,7 @@
 language: node_js
 node_js:
-  - '0.10'
-  - '0.11'
-matrix:
-  allow_failures:
-   - node_js: "0.11"
-  fast_finish: true
+ - '0.10'
+ - '0.12'
+ - 'iojs'
+sudo: false
 script: npm install . && npm test
