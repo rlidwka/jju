@@ -87,3 +87,8 @@ assert.equal('{a: 1, b: 2, z: 3}', stringify({b:2,a:1,z:3}, {sort_keys: 1}))
 assert.equal('{a: 1, b: {a: 2, b: 5, c: 1}, z: 3}', stringify({b:{c:1,a:2,b:5},a:1,z:3}, {sort_keys: 1}))
 assert.equal('{a: [3, 5, 1], b: 2, z: 3}', stringify({b:2,a:[3,5,1],z:3}, {sort_keys: 1}))
 assert.equal('{b: 2, a: 1, z: 3}', stringify({b:2,a:1,z:3}, {sort_keys: 0}))
+
+// modes
+assert.equal(stringify({ c: Infinity }, { mode: 'json'  }), '{"c": null}')
+assert.equal(stringify({ c: Infinity }, { mode: 'cjson' }), '{"c": null}')
+assert.equal(stringify({ c: Infinity }, { mode: 'json5' }), '{c: Infinity}')
