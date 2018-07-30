@@ -40,7 +40,4 @@ keywords:
 publishConfig:
   registry: https://registry.npmjs.org/
 
-license:
-  type: WTFPL
-  url: http://www.wtfpl.net/txt/copying/
-
+license: MIT
