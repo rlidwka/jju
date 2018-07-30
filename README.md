@@ -55,8 +55,8 @@ parse('{hasOwnProperty: 1, x: 2}', {reserved_keys: 'ignore'}).hasOwnProperty('x'
 parse('{hasOwnProperty: 1}', {reserved_keys: 'throw'}) == SyntaxError
 
 // 'replace' will replace reserved keys with new ones:
-parse('{hasOwnProperty: 1}', {reserved_keys: 'throw'}) == {hasOwnProperty: 1}
-parse('{hasOwnProperty: 1, x: 2}', {reserved_keys: 'ignore'}).hasOwnProperty('x') == TypeError
+parse('{hasOwnProperty: 1}', {reserved_keys: 'replace'}) == {hasOwnProperty: 1}
+parse('{hasOwnProperty: 1, x: 2}', {reserved_keys: 'replace'}).hasOwnProperty('x') == TypeError
 ```
 
 
