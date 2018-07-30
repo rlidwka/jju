@@ -37,7 +37,4 @@ keywords:
   - serializer
   - data
 
-publishConfig:
-  registry: https://registry.npmjs.org/
-
 license: MIT
