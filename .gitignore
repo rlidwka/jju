@@ -1,4 +1,3 @@
-package.json
 node_modules
 test/external/parse-cases
 test/external/v8.js

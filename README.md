@@ -7,6 +7,12 @@
 ## Installation
 
 ```
+yarn add jju
+```
+
+or
+
+```
 npm install jju
 ```
 

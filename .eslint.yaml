@@ -34,7 +34,7 @@ rules:
   complexity: [0, 10]
 
   # never saw it, but self is preferred
-  consistent-this: [1, self]
+  #consistent-this: [1, self]
 
   # fails good code
   curly: [0, multi]
@@ -246,20 +246,15 @@ rules:
   no-new-object: 1
   no-new-wrappers: 1
   no-obj-calls: 1
-  no-octal: 1
   no-proto: 1
   no-regex-spaces: 1
   no-return-assign: 1
   no-script-url: 1
   no-self-compare: 1
-  no-shadow: 1
   no-shadow-restricted-names: 1
   no-spaced-func: 1
   no-sparse-arrays: 1
-  no-sync: 1
-  no-undef: 1
   no-undef-init: 1
-  no-unreachable: 1
   no-with: 1
   no-yoda: 1
   radix: 1

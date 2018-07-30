@@ -1,5 +1,3 @@
-# use "yapm install ." if you're installing this from git repository
-
 # "jju" stands for "json/json5 utils"
 name: jju
 
@@ -20,15 +18,13 @@ bugs:
 homepage: http://rlidwka.github.io/jju/
 
 devDependencies:
-  mocha: '>=1.21.0'
-  js-yaml: '>=3.1.0'
-
-  # linting tools
-  eslint: '~0.4.2'
+  mocha: '^5.2.0'
+  js-yaml: '^3.12.0'
+  eslint: '~0.4.2' # TODO: update this
 
 scripts:
-  test: 'mocha test/*.js'
-  lint: 'eslint -c ./.eslint.yaml ./lib'
+  test: make test
+  lint: make lint
 
 keywords:
   - json
