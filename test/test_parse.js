@@ -154,6 +154,11 @@ if (process.version > 'v0.11.7') {
 
 assert.throws(parse.bind(null, "{-1:42}"))
 
+assert.deepEqual(parse('{ "key": 1, "key": 2}'), { key: 2 })
+assert.throws(function() {
+  parse('{ "key": 1, "key": 2}', { no_duplicate_keys: true })
+})
+
 for (var i=0; i<100; i++) {
   var str = '-01.e'.split('')
 
