@@ -80,6 +80,8 @@ parse('{hasOwnProperty: 1, x: 2}', {reserved_keys: 'replace'}).hasOwnProperty('x
 
  - mode - operation mode, set it to 'json' if you want to throw on non-strict json files (String)
 
+ - no_duplicate_keys - throw an error, if the same key repeats in the same object (Boolean). Strict JSON specification allows it, but it is often a mistake, because only the last value will "win" the parsing.
+
 ### jju.stringify() function
 
 ```javascript
