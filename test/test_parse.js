@@ -1,7 +1,7 @@
 var assert = require('assert')
 var parse = require('../').parse
 
-function addTest(arg, bulk) {
+function addTest(arg, bulk, json5) {
   function fn_json5() {
     //console.log('testing: ', arg)
     try {
@@ -33,11 +33,19 @@ function addTest(arg, bulk) {
   }
 
   if (typeof(describe) === 'function' && !bulk) {
-    it('test_parse_json5: ' + JSON.stringify(arg), fn_json5)
-    it('test_parse_strict: ' + JSON.stringify(arg), fn_strict)
+    if (json5 !== false) {
+      it('test_parse_json5: ' + JSON.stringify(arg), fn_json5)
+    }
+    if (json5 !== true) {
+      it('test_parse_strict: ' + JSON.stringify(arg), fn_strict)
+    }
   } else {
-    fn_json5()
-    fn_strict()
+    if (json5 !== false) {
+      fn_json5()
+    }
+    if (json5 !== true) {
+      fn_strict()
+    }
   }
 }
 
@@ -108,7 +116,11 @@ assert.strictEqual(parse(undefined), undefined)
 addTest('[1,\r\n2,\r3,\n]')
 '\x09\x0A\x0B\x0C\x0D\x20\xA0\uFEFF\u1680\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200A\u2028\u2029\u202F\u205F\u3000'.split('').forEach(function(x) {
   addTest(x+'[1,'+x+'2]'+x)
-  addTest('"'+x+'"'+x)
+  // Do not test additional Unicode line separators, which are accepted
+  // as a usual whitespace by JavaScript parser, but JJU rejects them
+  // as line breaks, which must not appear inside a string value.
+  var json5 = x === '\u2028' || x === '\u2029' ? false : undefined
+  addTest('"'+x+'"'+x, undefined, json5)
 })
 '\u000A\u000D\u2028\u2029'.split('').forEach(function(x) {
   addTest(x+'[1,'+x+'2]'+x)
