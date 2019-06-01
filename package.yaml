@@ -18,9 +18,9 @@ bugs:
 homepage: http://rlidwka.github.io/jju/
 
 devDependencies:
-  mocha: '^5.2.0'
-  js-yaml: '^3.12.0'
-  eslint: '~0.4.2' # TODO: update this
+  mocha: '6.1.4'
+  js-yaml: '13.3.1'
+  eslint: '5.16.0' # TODO: update this
 
 scripts:
   test: make test
