@@ -50,4 +50,27 @@ addTest(t.quote_keys, false)
 var t = analyze("{foo:'bar', \"bar\":'baz', \"baz\":\"quux\"}")
 addTest(t.quote, '"')
 addTest(t.quote_keys, false)
+addTest(t.has_multi_line_quote, false)
+addTest(t.quote_types[0], "'")
+addTest(t.quote_types[1], '"')
 
+var t = analyze(`
+{ foo: "ba\\
+r"}
+`)
+addTest(t.has_multi_line_quote, true)
+
+var t = analyze(`[{ foo: "bar", bar: "baz" }, { bar: "baz" }]`)
+addTest(t.has_trailing_comma, false)
+
+var t = analyze(`[{ foo: "bar", }, { bar: "baz" }]`)
+addTest(t.has_trailing_comma, true)
+
+var t = analyze(`[{ foo: "bar"}, { bar: "baz" },]`)
+addTest(t.has_trailing_comma, true)
+
+var t = analyze(`[1, 2]`)
+addTest(t.has_trailing_comma, false)
+
+var t = analyze(`[1, 2,]`)
+addTest(t.has_trailing_comma, true)
